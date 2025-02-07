@@ -1,52 +1,55 @@
 {
-	"name": "knightfallbr.com",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint ."
-	},
-	"devDependencies": {
-		"@eslint/compat": "1.2.6",
-		"@eslint/js": "9.19.0",
-		"@sveltejs/adapter-auto": "4.0.0",
-		"@sveltejs/kit": "2.17.1",
-		"@sveltejs/vite-plugin-svelte": "5.0.3",
-		"autoprefixer": "10.4.20",
-		"config-aeryle": "2.0.6",
-		"cz-emoji": "1.3.2-canary.2",
-		"eslint": "9.19.0",
-		"eslint-config-prettier": "10.0.1",
-		"eslint-plugin-svelte": "2.46.1",
-		"globals": "15.14.0",
-		"prettier": "3.4.2",
-		"prettier-plugin-svelte": "3.3.3",
-		"prettier-plugin-tailwindcss": "0.6.11",
-		"svelte": "5.19.9",
-		"svelte-check": "4.1.4",
-		"tailwindcss": "4.0.4",
-		"typescript": "5.7.3",
-		"typescript-eslint": "8.23.0",
-		"vite": "6.1.0"
-	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-emoji"
-		},
-		"cz-emoji": {
-			"skipQuestions": [
-				"scope",
-				"body",
-				"issues",
-				"breaking"
-			]
-		}
-	}
+  "name": "knightfallbr.com",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "format": "prettier --write .",
+    "lint": "prettier --check . && eslint ."
+  },
+  "devDependencies": {
+    "@eslint/compat": "1.2.6",
+    "@eslint/js": "9.19.0",
+    "@sveltejs/adapter-auto": "4.0.0",
+    "@sveltejs/kit": "2.17.1",
+    "@sveltejs/vite-plugin-svelte": "5.0.3",
+    "@tailwindcss/postcss": "4.0.4",
+    "autoprefixer": "10.4.20",
+    "config-aeryle": "2.0.6",
+    "cz-emoji": "1.3.2-canary.2",
+    "eslint": "9.19.0",
+    "eslint-config-prettier": "10.0.1",
+    "eslint-plugin-import-x": "4.6.1",
+    "eslint-plugin-prettier": "5.2.3",
+    "eslint-plugin-svelte": "2.46.1",
+    "globals": "15.14.0",
+    "prettier": "3.4.2",
+    "prettier-plugin-svelte": "3.3.3",
+    "prettier-plugin-tailwindcss": "0.6.11",
+    "svelte": "5.19.9",
+    "svelte-check": "4.1.4",
+    "tailwindcss": "4.0.4",
+    "typescript": "5.7.3",
+    "typescript-eslint": "8.23.0",
+    "vite": "6.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-emoji"
+    },
+    "cz-emoji": {
+      "skipQuestions": [
+        "scope",
+        "body",
+        "issues",
+        "breaking"
+      ]
+    }
+  }
 }

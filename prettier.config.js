@@ -1,3 +1,8 @@
-import { prettier } from 'config-aeryle';
+import { prettier } from 'config-aeryle'
 
-export default prettier.config;
+/** @type {import('prettier').Config} */
+export default {
+  ...prettier.config,
+
+  plugins: ['prettier-plugin-tailwindcss'],
+}
