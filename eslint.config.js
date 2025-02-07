@@ -1,6 +1,4 @@
-import { eslint } from 'config-aeryle';
-import { fileURLToPath } from 'node:url';
-const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
+import { eslint } from 'config-aeryle'
 
 export default [
   eslint.ignores.base,
