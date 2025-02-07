@@ -1,6 +1,6 @@
-import { DISCORD_URL } from "$env/static/private";
-import { redirect } from "@sveltejs/kit";
+import { DISCORD_URL } from '$env/static/private'
+import { redirect } from '@sveltejs/kit'
 
 export const load = () => {
-  throw redirect(308, DISCORD_URL);
+  throw redirect(308, DISCORD_URL)
 }
