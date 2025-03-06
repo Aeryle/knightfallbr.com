@@ -1,6 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit'
 
 interface Player {
+  UUID: string
   prefixes?: string[]
   username?: string
   postfixes?: string[]
@@ -9,15 +10,17 @@ interface Player {
 const wrapWithColor = (color: string, content: string) => `<color=${color}>${content}</color>`
 
 export const GET: RequestHandler = () => {
-  const players: Record<string, Player> = {
-    aeryle: {
+  const players: Player[] = [
+    {
+      UUID: 'aeryle',
       prefixes: ['👑'],
       username: wrapWithColor('#ffd700', '{nickname}'),
     },
-    't1nquen#goat': {
+    {
+      UUID: 't1quen#goat',
       prefixes: ['🤡'],
     },
-  }
+  ]
 
   return json(players)
 }
