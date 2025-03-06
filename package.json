@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "wrangler pages dev --port 4173",
     "prepare": "svelte-kit sync || echo ''",
-    "publish": "wrangler pages deploy",
+    "publish": "bun run build && wrangler pages deploy",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "format": "prettier --write .",
