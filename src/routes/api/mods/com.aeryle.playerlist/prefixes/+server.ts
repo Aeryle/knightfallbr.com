@@ -25,6 +25,10 @@ export const GET: RequestHandler = () => {
       prefixes: ['👍'],
       username: wrapWithColor('red', '{nickname}'),
     },
+    {
+      UUID: 'adam',
+      prefixes: ['🔥'],
+    },
   ]
 
   return json(players)
