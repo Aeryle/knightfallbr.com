@@ -17,7 +17,7 @@ export const GET: RequestHandler = () => {
       username: wrapWithColor('#ffd700', '{nickname}'),
     },
     {
-      UUID: 't1quen#goat',
+      UUID: 't1nquen#goat',
       prefixes: ['🤡'],
     },
   ]
