@@ -1,7 +1,5 @@
 import { redirect } from '@sveltejs/kit'
 
-import type { Actions } from './$types'
-
 type Scope =
   | 'identify'
   | 'email'
@@ -49,20 +47,18 @@ type Scope =
   | 'lobbies.write'
   | 'applications.commands.permissions.update'
 
-export const actions: Actions = {
-  login: async ({ locals: { supabase }, url }) => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'discord',
-      options: {
-        redirectTo: new URL('/auth/callback', url.origin).toString(),
-        scopes: (['identify'] satisfies Scope[]).join(' '),
-      },
-    })
-    if (data.url) throw redirect(303, data.url)
+export const GET = async ({ locals: { supabase }, url }) => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'discord',
+    options: {
+      redirectTo: new URL('/auth/callback', url.origin).toString(),
+      scopes: encodeURIComponent((['guilds.join'] satisfies Scope[]).join(' ')),
+    },
+  })
+  if (error) {
+    console.error(error)
+    throw redirect(303, '/auth/error')
+  }
 
-    if (error) {
-      console.error(error)
-      throw redirect(303, '/auth/error')
-    }
-  },
+  throw redirect(303, data.url)
 }
