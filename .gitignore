@@ -26,3 +26,4 @@ vite.config.ts.timestamp-*
 package-lock.json
 pnpm-lock.json
 yarn.lock
+__unconfig_vite.config.ts
