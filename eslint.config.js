@@ -1,4 +1,6 @@
 import { eslint } from 'config-aeryle'
+import { createNodeResolver } from 'eslint-plugin-import-x'
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
 
 /** @type {import('eslint').Linter.Config} */
 export default [
@@ -12,6 +14,9 @@ export default [
   ...eslint.imports,
 
   {
+    settings: {
+      'import-x/resolver-next': [createTypeScriptImportResolver(), createNodeResolver()],
+    },
     rules: {
       'import-x/no-unresolved': 'off',
     },
