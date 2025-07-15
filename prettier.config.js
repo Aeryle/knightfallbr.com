@@ -4,5 +4,6 @@ import { prettier } from 'config-aeryle'
 export default {
   ...prettier.config,
 
-  plugins: ['prettier-plugin-tailwindcss'],
+  plugins: ['prettier-plugin-svelte', 'prettier-plugin-tailwindcss'],
+  tailwindStylesheet: './src/app.css',
 }
