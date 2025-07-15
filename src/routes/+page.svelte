@@ -55,9 +55,9 @@
     {session ? 'Logout' : 'Login with Discord'}
   </a> -->
 {#if !session}
-  <OutlineButton mode="link" href="/auth/login">Login / Register</OutlineButton>
+  <OutlineButton mode="link" href="/auth/login">Notify me by email</OutlineButton>
 {:else}
-  <OutlineButton mode="link" href="/auth/login">Already logged in</OutlineButton>
+  <OutlineButton mode="link" href="/auth/login">You will be notified by email</OutlineButton>
 {/if}
 
 <div class="flex flex-col items-center space-y-8">
