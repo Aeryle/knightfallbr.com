@@ -30,9 +30,9 @@
       'Welcome to KnightfallBR, a growing gaming community. The website is still under construction but you can join our Discord community.',
     images: [
       {
-        url: 'https://knightfallbr.com/favicon.ico',
-        width: 512,
-        height: 512,
+        url: 'https://knightfallbr.com/og-image.png',
+        width: 2560,
+        height: 1440,
         alt: 'KnightfallBR',
       },
     ],
@@ -44,7 +44,7 @@
     title: 'KnightfallBR - Under Construction',
     description:
       'Welcome to KnightfallBR, a growing gaming community. The website is still under construction but you can join our Discord community.',
-    image: 'https://knightfallbr.com/og-image.png',
+    image: 'https://knightfallbr.com/og-image.webp',
   }}
   additionalMetaTags={[
     {
