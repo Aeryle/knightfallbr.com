@@ -57,7 +57,7 @@
 {#if !session}
   <OutlineButton mode="link" href="/auth/login">Notify me by email</OutlineButton>
 {:else}
-  <OutlineButton mode="link" href="/auth/login">You will be notified by email</OutlineButton>
+  <OutlineButton mode="link" href="#">You will be notified by email</OutlineButton>
 {/if}
 
 <div class="flex flex-col items-center space-y-8">
