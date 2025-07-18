@@ -5,5 +5,11 @@
   "pages_build_output_dir": ".svelte-kit/cloudflare",
   "observability": {
     "enabled": true
-  }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "ROOM_CONFIG",
+      "id": "room_config_namespace"
+    }
+  ]
 }

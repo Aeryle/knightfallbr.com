@@ -1,3 +1,11 @@
-export let roomId = ''
+import type { KVNamespace } from '@cloudflare/workers-types'
 
-export const updateRoomId = (id: string) => (roomId = id)
+const ROOM_ID_KEY = 'current_room_id'
+
+export const getRoomId = async (kv: KVNamespace): Promise<string> => {
+  return (await kv.get(ROOM_ID_KEY)) || ''
+}
+
+export const updateRoomId = async (kv: KVNamespace, id: string): Promise<void> => {
+  await kv.put(ROOM_ID_KEY, id)
+}
