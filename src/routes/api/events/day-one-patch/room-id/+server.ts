@@ -1,8 +1,8 @@
 import { error, text } from '@sveltejs/kit'
 
-import { SUPABASE_DEFAULT_KEY } from '$env/static/private'
+import { roomId, updateRoomId } from '$lib/room-id.server'
 
-let roomId = ''
+import { SUPABASE_DEFAULT_KEY } from '$env/static/private'
 
 export const GET = async () => text(roomId)
 
@@ -14,7 +14,7 @@ export const PUT = async ({ request }) => {
   }
 
   try {
-    roomId = await request.text()
+    updateRoomId(await request.text())
   } catch {
     throw error(500, { field: '', message: 'Internal server error' })
   }
