@@ -12,8 +12,8 @@
       "id": "1a991d04ff8644219dde1558e2d47a32"
     },
     {
-      "binding": "ACTIVE_PLAYERS_KV",
-      "id": "2b992e05gg9755320eef2669f3e58b43"
+      "binding": "PLAYERLIST_CURRENT_PLAYERS",
+      "id": "d66ca78c4a23431a9e33906faa10a889"
     }
   ]
 }

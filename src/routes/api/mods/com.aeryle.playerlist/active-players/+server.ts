@@ -55,18 +55,18 @@ const cleanupExpiredPlayers = async (kv: KVNamespace) => {
 }
 
 export const GET: RequestHandler = async ({ platform }) => {
-  if (!platform?.env.ACTIVE_PLAYERS_KV) {
+  if (!platform?.env.PLAYERLIST_CURRENT_PLAYERS) {
     throw error(500, { field: '', message: 'KV storage not available' })
   }
 
-  await cleanupExpiredPlayers(platform.env.ACTIVE_PLAYERS_KV)
+  await cleanupExpiredPlayers(platform.env.PLAYERLIST_CURRENT_PLAYERS)
 
   try {
-    const list = await platform.env.ACTIVE_PLAYERS_KV.list()
+    const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
     const players = []
 
     for (const key of list.keys) {
-      const playerData = (await platform.env.ACTIVE_PLAYERS_KV.get(key.name, 'json')) as ActivePlayer | null
+      const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
       if (playerData) {
         players.push({
           uuid: playerData.uuid,
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ platform }) => {
 }
 
 export const PUT: RequestHandler = async ({ request, platform }) => {
-  if (!platform?.env.ACTIVE_PLAYERS_KV) {
+  if (!platform?.env.PLAYERLIST_CURRENT_PLAYERS) {
     throw error(500, { field: '', message: 'KV storage not available' })
   }
 
@@ -114,11 +114,11 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
     }
 
     // Check for existing entry with same roomId and actorId
-    const list = await platform.env.ACTIVE_PLAYERS_KV.list()
+    const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
     let existingKey: string | null = null
 
     for (const key of list.keys) {
-      const playerData = (await platform.env.ACTIVE_PLAYERS_KV.get(key.name, 'json')) as ActivePlayer | null
+      const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
       if (playerData && playerData.uuid === uuid && playerData.roomId === roomId && playerData.actorId === actorId) {
         existingKey = key.name
         break
@@ -134,11 +134,11 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
 
     if (existingKey) {
       // Reset timer for existing entry
-      await platform.env.ACTIVE_PLAYERS_KV.put(existingKey, JSON.stringify(playerData))
+      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(existingKey, JSON.stringify(playerData))
     } else {
       // Add new entry
       const key = `${uuid}_${roomId}_${actorId}_${Date.now()}`
-      await platform.env.ACTIVE_PLAYERS_KV.put(key, JSON.stringify(playerData))
+      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(key, JSON.stringify(playerData))
     }
   } else {
     // UUID-specific key can only manage its own UUID
@@ -162,11 +162,11 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
     }
 
     // Check for existing entry with same roomId and actorId
-    const list = await platform.env.ACTIVE_PLAYERS_KV.list()
+    const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
     let existingKey: string | null = null
 
     for (const key of list.keys) {
-      const playerData = (await platform.env.ACTIVE_PLAYERS_KV.get(key.name, 'json')) as ActivePlayer | null
+      const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
       if (
         playerData &&
         playerData.uuid === authorizedUuid &&
@@ -187,11 +187,11 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
 
     if (existingKey) {
       // Reset timer for existing entry
-      await platform.env.ACTIVE_PLAYERS_KV.put(existingKey, JSON.stringify(playerData))
+      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(existingKey, JSON.stringify(playerData))
     } else {
       // Add new entry
       const key = `${authorizedUuid}_${roomId}_${actorId}_${Date.now()}`
-      await platform.env.ACTIVE_PLAYERS_KV.put(key, JSON.stringify(playerData))
+      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(key, JSON.stringify(playerData))
     }
   }
 

@@ -23,7 +23,7 @@ declare global {
     interface Platform {
       env: {
         DAY_ONE_PATCH_CONFIG: KVNamespace
-        ACTIVE_PLAYERS_KV: KVNamespace
+        PLAYERLIST_CURRENT_PLAYERS: KVNamespace
       }
     }
   }
