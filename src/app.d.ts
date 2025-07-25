@@ -22,7 +22,8 @@ declare global {
     // interface PageState {}
     interface Platform {
       env: {
-        ROOM_CONFIG: KVNamespace
+        DAY_ONE_PATCH_CONFIG: KVNamespace
+        ACTIVE_PLAYERS_KV: KVNamespace
       }
     }
   }
