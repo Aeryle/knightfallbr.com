@@ -14,7 +14,7 @@ import {
 
 interface ActivePlayer {
   uuid: string
-  roomId: string
+  roomName: string
   actorId: number
   timestamp: number
 }
@@ -70,7 +70,7 @@ export const GET: RequestHandler = async ({ platform }) => {
       if (playerData) {
         players.push({
           uuid: playerData.uuid,
-          roomId: playerData.roomId,
+          roomName: playerData.roomName,
           actorId: playerData.actorId,
         })
       }
@@ -93,7 +93,7 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
   }
 
   const token = authHeader.substring(7)
-  let body: { uuid: keyof typeof uuidToKey; roomId: string; actorId: number }
+  let body: { uuid: keyof typeof uuidToKey; roomName: string; actorId: number }
 
   try {
     body = await request.json()
@@ -103,23 +103,28 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
 
   if (token === SUPABASE_DEFAULT_KEY) {
     // SUPABASE_DEFAULT_KEY can manage any UUID
-    const { uuid, roomId, actorId } = body
+    const { uuid, roomName, actorId } = body
 
-    if (!uuid || !roomId || actorId === undefined) {
-      return json({ error: 'Missing required fields: uuid, roomId, actorId' }, { status: 400 })
+    if (!uuid || !roomName || actorId === undefined) {
+      return json({ error: 'Missing required fields: uuid, roomName, actorId' }, { status: 400 })
     }
 
     if (!(uuid in uuidToKey)) {
       return json({ error: 'Invalid UUID' }, { status: 400 })
     }
 
-    // Check for existing entry with same roomId and actorId
+    // Check for existing entry with same roomName and actorId
     const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
     let existingKey: string | null = null
 
     for (const key of list.keys) {
       const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
-      if (playerData && playerData.uuid === uuid && playerData.roomId === roomId && playerData.actorId === actorId) {
+      if (
+        playerData &&
+        playerData.uuid === uuid &&
+        playerData.roomName === roomName &&
+        playerData.actorId === actorId
+      ) {
         existingKey = key.name
         break
       }
@@ -127,7 +132,7 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
 
     const playerData: ActivePlayer = {
       uuid,
-      roomId,
+      roomName,
       actorId,
       timestamp: Date.now(),
     }
@@ -137,7 +142,7 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
       await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(existingKey, JSON.stringify(playerData))
     } else {
       // Add new entry
-      const key = `${uuid}_${roomId}_${actorId}_${Date.now()}`
+      const key = `${uuid}_${roomName}_${actorId}_${Date.now()}`
       await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(key, JSON.stringify(playerData))
     }
   } else {
@@ -155,13 +160,13 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
       return json({ error: 'Invalid API key' }, { status: 401 })
     }
 
-    const { roomId, actorId } = body
+    const { roomName, actorId } = body
 
-    if (!roomId || actorId === undefined) {
-      return json({ error: 'Missing required fields: roomId, actorId' }, { status: 400 })
+    if (!roomName || actorId === undefined) {
+      return json({ error: 'Missing required fields: roomName, actorId' }, { status: 400 })
     }
 
-    // Check for existing entry with same roomId and actorId
+    // Check for existing entry with same roomName and actorId
     const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
     let existingKey: string | null = null
 
@@ -170,7 +175,7 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
       if (
         playerData &&
         playerData.uuid === authorizedUuid &&
-        playerData.roomId === roomId &&
+        playerData.roomName === roomName &&
         playerData.actorId === actorId
       ) {
         existingKey = key.name
@@ -180,7 +185,7 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
 
     const playerData: ActivePlayer = {
       uuid: authorizedUuid,
-      roomId,
+      roomName,
       actorId,
       timestamp: Date.now(),
     }
@@ -190,7 +195,7 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
       await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(existingKey, JSON.stringify(playerData))
     } else {
       // Add new entry
-      const key = `${authorizedUuid}_${roomId}_${actorId}_${Date.now()}`
+      const key = `${authorizedUuid}_${roomName}_${actorId}_${Date.now()}`
       await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(key, JSON.stringify(playerData))
     }
   }
