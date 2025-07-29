@@ -1,4 +1,3 @@
-import type { KVNamespace } from '@cloudflare/workers-types'
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js'
 
 import type { Database } from './database.types.ts' // import generated types
@@ -20,12 +19,7 @@ declare global {
       session: Session | null
     }
     // interface PageState {}
-    interface Platform {
-      env: {
-        DAY_ONE_PATCH_CONFIG: KVNamespace
-        PLAYERLIST_CURRENT_PLAYERS: KVNamespace
-      }
-    }
+    // interface Platform {}
   }
 }
 

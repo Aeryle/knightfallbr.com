@@ -1,5 +1,5 @@
-import type { KVNamespace } from '@cloudflare/workers-types'
 import { json, type RequestHandler, error } from '@sveltejs/kit'
+import { Redis } from '@upstash/redis'
 
 import {
   SUPABASE_DEFAULT_KEY,
@@ -10,7 +10,14 @@ import {
   UUID_THIRDONE_KEY,
   UUID_SOUPTIS_KEY,
   UUID_TACOSMAN_KEY,
+  KV_REST_API_TOKEN,
+  KV_REST_API_URL,
 } from '$env/static/private'
+
+const redis = new Redis({
+  url: KV_REST_API_URL,
+  token: KV_REST_API_TOKEN,
+})
 
 interface ActivePlayer {
   uuid: string
@@ -29,64 +36,61 @@ const uuidToKey = {
   souptis: UUID_SOUPTIS_KEY,
   tacosman: UUID_TACOSMAN_KEY,
 } as const
-// Cleanup function to remove expired entries from KV
-const cleanupExpiredPlayers = async (kv: KVNamespace) => {
+
+// Cleanup function to remove expired entries from Redis
+const cleanupExpiredPlayers = async () => {
   const now = Date.now()
   const expirationTime = 1000 * 60 * 10 // 10 minutes
 
   try {
-    const list = await kv.list()
+    const keys = await redis.keys('player:*')
     const expiredKeys = []
 
-    for (const key of list.keys) {
-      const playerData = (await kv.get(key.name, 'json')) as ActivePlayer | null
+    for (const key of keys) {
+      const playerData = await redis.get<ActivePlayer>(key)
       if (playerData && now - playerData.timestamp > expirationTime) {
-        expiredKeys.push(key.name)
+        expiredKeys.push(key)
       }
     }
 
     // Delete expired entries
-    for (const key of expiredKeys) {
-      await kv.delete(key)
+    if (expiredKeys.length > 0) {
+      await redis.del(...expiredKeys)
     }
   } catch (error) {
     console.error('Error cleaning up expired players:', error)
   }
 }
 
-export const GET: RequestHandler = async ({ platform }) => {
-  if (!platform?.env.PLAYERLIST_CURRENT_PLAYERS) {
-    throw error(500, { field: '', message: 'KV storage not available' })
-  }
-
-  await cleanupExpiredPlayers(platform.env.PLAYERLIST_CURRENT_PLAYERS)
+export const GET: RequestHandler = async () => {
+  await cleanupExpiredPlayers()
 
   try {
-    const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
-    const players = []
+    const keys = await redis.keys('player:*')
+    const players: ActivePlayer[] = []
 
-    for (const key of list.keys) {
-      const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
+    for (const key of keys) {
+      const playerData = await redis.get<ActivePlayer>(key)
       if (playerData) {
         players.push({
           uuid: playerData.uuid,
           roomName: playerData.roomName,
           actorId: playerData.actorId,
-        })
+        } as ActivePlayer)
       }
     }
 
-    return json(players)
+    return json(players, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    })
   } catch {
     throw error(500, { field: '', message: 'Failed to retrieve active players' })
   }
 }
 
-export const PUT: RequestHandler = async ({ request, platform }) => {
-  if (!platform?.env.PLAYERLIST_CURRENT_PLAYERS) {
-    throw error(500, { field: '', message: 'KV storage not available' })
-  }
-
+export const PUT: RequestHandler = async ({ request }) => {
   const authHeader = request.headers.get('authorization')
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return json({ error: 'Missing or invalid authorization header' }, { status: 401 })
@@ -114,18 +118,18 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
     }
 
     // Check for existing entry with same roomName and actorId
-    const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
+    const existingKeys = await redis.keys('player:*')
     let existingKey: string | null = null
 
-    for (const key of list.keys) {
-      const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
+    for (const key of existingKeys) {
+      const playerData = await redis.get<ActivePlayer>(key)
       if (
         playerData &&
         playerData.uuid === uuid &&
         playerData.roomName === roomName &&
         playerData.actorId === actorId
       ) {
-        existingKey = key.name
+        existingKey = key
         break
       }
     }
@@ -137,14 +141,8 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
       timestamp: Date.now(),
     }
 
-    if (existingKey) {
-      // Reset timer for existing entry
-      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(existingKey, JSON.stringify(playerData))
-    } else {
-      // Add new entry
-      const key = `${uuid}_${roomName}_${actorId}_${Date.now()}`
-      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(key, JSON.stringify(playerData))
-    }
+    const redisKey = existingKey || `player:${uuid}_${roomName}_${actorId}_${Date.now()}`
+    await redis.set(redisKey, playerData)
   } else {
     // UUID-specific key can only manage its own UUID
     let authorizedUuid: string | null = null
@@ -167,18 +165,18 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
     }
 
     // Check for existing entry with same roomName and actorId
-    const list = await platform.env.PLAYERLIST_CURRENT_PLAYERS.list()
+    const existingKeys = await redis.keys('player:*')
     let existingKey: string | null = null
 
-    for (const key of list.keys) {
-      const playerData = (await platform.env.PLAYERLIST_CURRENT_PLAYERS.get(key.name, 'json')) as ActivePlayer | null
+    for (const key of existingKeys) {
+      const playerData = await redis.get<ActivePlayer>(key)
       if (
         playerData &&
         playerData.uuid === authorizedUuid &&
         playerData.roomName === roomName &&
         playerData.actorId === actorId
       ) {
-        existingKey = key.name
+        existingKey = key
         break
       }
     }
@@ -190,14 +188,8 @@ export const PUT: RequestHandler = async ({ request, platform }) => {
       timestamp: Date.now(),
     }
 
-    if (existingKey) {
-      // Reset timer for existing entry
-      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(existingKey, JSON.stringify(playerData))
-    } else {
-      // Add new entry
-      const key = `${authorizedUuid}_${roomName}_${actorId}_${Date.now()}`
-      await platform.env.PLAYERLIST_CURRENT_PLAYERS.put(key, JSON.stringify(playerData))
-    }
+    const redisKey = existingKey || `player:${authorizedUuid}_${roomName}_${actorId}_${Date.now()}`
+    await redis.set(redisKey, playerData)
   }
 
   return json({ success: true })
