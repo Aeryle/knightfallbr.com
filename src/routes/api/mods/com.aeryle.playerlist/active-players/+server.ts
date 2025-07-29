@@ -37,6 +37,9 @@ const uuidToKey = {
   tacosman: UUID_TACOSMAN_KEY,
 } as const
 
+// Store active SSE connections
+const sseConnections = new Set<ReadableStreamDefaultController<Uint8Array>>()
+
 // Cleanup function to remove expired entries from Redis
 const cleanupExpiredPlayers = async () => {
   const now = Date.now()
@@ -62,7 +65,8 @@ const cleanupExpiredPlayers = async () => {
   }
 }
 
-export const GET: RequestHandler = async () => {
+// Get current active players
+const getActivePlayers = async (): Promise<ActivePlayer[]> => {
   await cleanupExpiredPlayers()
 
   try {
@@ -80,14 +84,66 @@ export const GET: RequestHandler = async () => {
       }
     }
 
-    return json(players, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    })
+    return players
   } catch {
     throw error(500, { field: '', message: 'Failed to retrieve active players' })
   }
+}
+
+// Broadcast to all SSE connections
+const broadcastToClients = (data: any) => {
+  const message = `data: ${JSON.stringify(data)}\n\n`
+  const encoder = new TextEncoder()
+  const encodedMessage = encoder.encode(message)
+
+  for (const controller of sseConnections) {
+    try {
+      controller.enqueue(encodedMessage)
+    } catch (error) {
+      // Remove broken connections
+      sseConnections.delete(controller)
+    }
+  }
+}
+
+export const GET: RequestHandler = async () => {
+  let currentController: ReadableStreamDefaultController<Uint8Array>
+
+  const stream = new ReadableStream({
+    start(controller) {
+      currentController = controller
+      // Add this connection to our set
+      sseConnections.add(controller)
+
+      // Send SSE headers
+      const encoder = new TextEncoder()
+      controller.enqueue(encoder.encode('data: {"type":"connected"}\n\n'))
+
+      // Send initial active players data
+      getActivePlayers()
+        .then(players => {
+          const message = `data: ${JSON.stringify({ type: 'initial', players })}\n\n`
+          controller.enqueue(encoder.encode(message))
+        })
+        .catch(err => {
+          console.error('Error getting initial players:', err)
+        })
+    },
+    cancel() {
+      // Remove this connection when closed
+      sseConnections.delete(currentController)
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control',
+    },
+  })
 }
 
 export const PUT: RequestHandler = async ({ request }) => {
@@ -104,6 +160,8 @@ export const PUT: RequestHandler = async ({ request }) => {
   } catch {
     return json({ error: 'Invalid JSON body' }, { status: 400 })
   }
+
+  let playerData: ActivePlayer
 
   if (token === SUPABASE_DEFAULT_KEY) {
     // SUPABASE_DEFAULT_KEY can manage any UUID
@@ -122,19 +180,19 @@ export const PUT: RequestHandler = async ({ request }) => {
     let existingKey: string | null = null
 
     for (const key of existingKeys) {
-      const playerData = await redis.get<ActivePlayer>(key)
+      const existingPlayerData = await redis.get<ActivePlayer>(key)
       if (
-        playerData &&
-        playerData.uuid === uuid &&
-        playerData.roomName === roomName &&
-        playerData.actorId === actorId
+        existingPlayerData &&
+        existingPlayerData.uuid === uuid &&
+        existingPlayerData.roomName === roomName &&
+        existingPlayerData.actorId === actorId
       ) {
         existingKey = key
         break
       }
     }
 
-    const playerData: ActivePlayer = {
+    playerData = {
       uuid,
       roomName,
       actorId,
@@ -169,19 +227,19 @@ export const PUT: RequestHandler = async ({ request }) => {
     let existingKey: string | null = null
 
     for (const key of existingKeys) {
-      const playerData = await redis.get<ActivePlayer>(key)
+      const existingPlayerData = await redis.get<ActivePlayer>(key)
       if (
-        playerData &&
-        playerData.uuid === authorizedUuid &&
-        playerData.roomName === roomName &&
-        playerData.actorId === actorId
+        existingPlayerData &&
+        existingPlayerData.uuid === authorizedUuid &&
+        existingPlayerData.roomName === roomName &&
+        existingPlayerData.actorId === actorId
       ) {
         existingKey = key
         break
       }
     }
 
-    const playerData: ActivePlayer = {
+    playerData = {
       uuid: authorizedUuid,
       roomName,
       actorId,
@@ -191,6 +249,16 @@ export const PUT: RequestHandler = async ({ request }) => {
     const redisKey = existingKey || `player:${authorizedUuid}_${roomName}_${actorId}_${Date.now()}`
     await redis.set(redisKey, playerData)
   }
+
+  // Broadcast the new player to all SSE clients
+  broadcastToClients({
+    type: 'player_added',
+    player: {
+      uuid: playerData.uuid,
+      roomName: playerData.roomName,
+      actorId: playerData.actorId,
+    },
+  })
 
   return json({ success: true })
 }
