@@ -20,7 +20,7 @@ const redis = new Redis({
 })
 
 interface ActivePlayer {
-  uuid: string
+  UUID: string
   roomName: string
   actorId: number
   timestamp: number
@@ -77,7 +77,7 @@ const getActivePlayers = async (): Promise<ActivePlayer[]> => {
       const playerData = await redis.get<ActivePlayer>(key)
       if (playerData) {
         players.push({
-          uuid: playerData.uuid,
+          UUID: playerData.UUID,
           roomName: playerData.roomName,
           actorId: playerData.actorId,
         } as ActivePlayer)
@@ -91,7 +91,7 @@ const getActivePlayers = async (): Promise<ActivePlayer[]> => {
 }
 
 // Broadcast to all SSE connections
-const broadcastToClients = (data: any) => {
+const broadcastToClients = (data: unknown) => {
   const message = `data: ${JSON.stringify(data)}\n\n`
   const encoder = new TextEncoder()
   const encodedMessage = encoder.encode(message)
@@ -99,7 +99,7 @@ const broadcastToClients = (data: any) => {
   for (const controller of sseConnections) {
     try {
       controller.enqueue(encodedMessage)
-    } catch (error) {
+    } catch {
       // Remove broken connections
       sseConnections.delete(controller)
     }
@@ -153,7 +153,7 @@ export const PUT: RequestHandler = async ({ request }) => {
   }
 
   const token = authHeader.substring(7)
-  let body: { uuid: keyof typeof uuidToKey; roomName: string; actorId: number }
+  let body: { UUID: keyof typeof uuidToKey; roomName: string; actorId: number }
 
   try {
     body = await request.json()
@@ -165,13 +165,13 @@ export const PUT: RequestHandler = async ({ request }) => {
 
   if (token === SUPABASE_DEFAULT_KEY) {
     // SUPABASE_DEFAULT_KEY can manage any UUID
-    const { uuid, roomName, actorId } = body
+    const { UUID, roomName, actorId } = body
 
-    if (!uuid || !roomName || actorId === undefined) {
+    if (!UUID || !roomName || actorId === undefined) {
       return json({ error: 'Missing required fields: uuid, roomName, actorId' }, { status: 400 })
     }
 
-    if (!(uuid in uuidToKey)) {
+    if (!(UUID in uuidToKey)) {
       return json({ error: 'Invalid UUID' }, { status: 400 })
     }
 
@@ -183,7 +183,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       const existingPlayerData = await redis.get<ActivePlayer>(key)
       if (
         existingPlayerData &&
-        existingPlayerData.uuid === uuid &&
+        existingPlayerData.UUID === UUID &&
         existingPlayerData.roomName === roomName &&
         existingPlayerData.actorId === actorId
       ) {
@@ -193,13 +193,13 @@ export const PUT: RequestHandler = async ({ request }) => {
     }
 
     playerData = {
-      uuid,
+      UUID,
       roomName,
       actorId,
       timestamp: Date.now(),
     }
 
-    const redisKey = existingKey || `player:${uuid}_${roomName}_${actorId}_${Date.now()}`
+    const redisKey = existingKey || `player:${UUID}_${roomName}_${actorId}_${Date.now()}`
     await redis.set(redisKey, playerData)
   } else {
     // UUID-specific key can only manage its own UUID
@@ -230,7 +230,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       const existingPlayerData = await redis.get<ActivePlayer>(key)
       if (
         existingPlayerData &&
-        existingPlayerData.uuid === authorizedUuid &&
+        existingPlayerData.UUID === authorizedUuid &&
         existingPlayerData.roomName === roomName &&
         existingPlayerData.actorId === actorId
       ) {
@@ -240,7 +240,7 @@ export const PUT: RequestHandler = async ({ request }) => {
     }
 
     playerData = {
-      uuid: authorizedUuid,
+      UUID: authorizedUuid,
       roomName,
       actorId,
       timestamp: Date.now(),
@@ -254,7 +254,7 @@ export const PUT: RequestHandler = async ({ request }) => {
   broadcastToClients({
     type: 'player_added',
     player: {
-      uuid: playerData.uuid,
+      uuid: playerData.UUID,
       roomName: playerData.roomName,
       actorId: playerData.actorId,
     },
