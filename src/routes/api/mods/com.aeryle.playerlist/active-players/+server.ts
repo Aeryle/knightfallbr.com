@@ -254,7 +254,7 @@ export const PUT: RequestHandler = async ({ request }) => {
   broadcastToClients({
     type: 'player_added',
     player: {
-      uuid: playerData.UUID,
+      UUID: playerData.UUID,
       roomName: playerData.roomName,
       actorId: playerData.actorId,
     },
