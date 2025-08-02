@@ -1,4 +1,6 @@
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr'
+import { injectAnalytics } from '@vercel/analytics/sveltekit'
+import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit'
 
 import type { LayoutLoad } from './$types'
 
@@ -43,3 +45,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 
   return { session, supabase, user }
 }
+
+injectAnalytics()
+injectSpeedInsights()
