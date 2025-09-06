@@ -4,7 +4,7 @@ interface Player {
   UUID: string
   prefixes?: string[]
   username?: string
-  postfixes?: string[]
+  suffixes?: string[]
 }
 
 const wrapWithColor = (color: string, content: string) => `<color=${color}>${content}</color>`
@@ -22,7 +22,7 @@ export const GET: RequestHandler = () => {
     },
     {
       UUID: 'andrew',
-      prefixes: ['👍'],
+      prefixes: ['👍', '💵'],
     },
     {
       UUID: 'adam',
@@ -39,6 +39,7 @@ export const GET: RequestHandler = () => {
     {
       UUID: 'tacosman',
       prefixes: ['🐎'],
+      suffixes: ['🤑'],
     },
   ]
 
