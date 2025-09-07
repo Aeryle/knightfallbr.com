@@ -41,6 +41,10 @@ export const GET: RequestHandler = () => {
       prefixes: ['🐎'],
       suffixes: ['🤑'],
     },
+    {
+      UUID: 'jazinth',
+      prefixes: ['🧽'],
+    },
   ]
 
   return json(players)
