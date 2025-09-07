@@ -33,10 +33,6 @@ export const GET: RequestHandler = () => {
       prefixes: ['👎'],
     },
     {
-      UUID: 'souptis',
-      username: wrapWithColor('#d3f5f5', '{nickname}'),
-    },
-    {
       UUID: 'tacosman',
       prefixes: ['🐎'],
       suffixes: ['🤑'],
@@ -44,6 +40,10 @@ export const GET: RequestHandler = () => {
     {
       UUID: 'jazinth',
       prefixes: ['🧽'],
+    },
+    {
+      UUID: 'ceta',
+      prefixes: ['🐐'],
     },
   ]
 
