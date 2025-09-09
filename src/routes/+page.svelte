@@ -46,14 +46,6 @@
 
 <h1 class="text-center text-6xl [word-spacing:100vw]">UNDER CONSTRUCTION</h1>
 
-<!-- <a
-    class="p-4 dark:bg-white bg-gray-800 rounded-4xl dark:text-black text-white mt-4"
-    href={session ? '/auth/logout' : '/auth/login'}
-    data-sveltekit-preload-code="off"
-    data-sveltekit-preload-data="off"
-  >
-    {session ? 'Logout' : 'Login with Discord'}
-  </a> -->
 {#if !session}
   <OutlineButton mode="link" href="/auth/login">Notify me by email</OutlineButton>
 {:else}
