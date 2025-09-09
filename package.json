@@ -15,8 +15,8 @@
     "lint": "prettier --check . && eslint ."
   },
   "devDependencies": {
-    "@fortawesome/free-brands-svg-icons": "6.7.2",
-    "@supabase/ssr": "0.6.1",
+    "@fortawesome/free-brands-svg-icons": "7.0.1",
+    "@supabase/ssr": "0.7.0",
     "@sveltejs/adapter-vercel": "5.8.1",
     "@sveltejs/enhanced-img": "0.7.0",
     "@sveltejs/kit": "2.23.0",
@@ -60,9 +60,9 @@
     }
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.51.0",
-    "@upstash/redis": "^1.35.1",
-    "caniuse-lite": "^1.0.30001727"
+    "@supabase/supabase-js": "2.57.2",
+    "@upstash/redis": "^1.35.3",
+    "caniuse-lite": "^1.0.30001741"
   },
   "trustedDependencies": [
     "@tailwindcss/oxide",
