@@ -17,6 +17,8 @@
   let textLength = $state(0)
 
   onMount(() => {
+    textLength = editor!.getText().length
+
     editor!.on('update', ({ editor }) => {
       const content = stripNewLines(editor.getHTML())
       editor.commands.setContent(content, {
