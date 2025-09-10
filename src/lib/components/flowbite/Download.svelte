@@ -16,7 +16,7 @@
   const { getDefaultButtonClass } = useEditableContext()
   const uniqueId = generateButtonId('share')
 
-  let isEditable = $derived(textLength <= 31)
+  let isEditable = $derived(textLength <= 30)
   let buttonClasses = $derived(getDefaultButtonClass(isEditable))
 
   const downloadFile = (content: string) => {

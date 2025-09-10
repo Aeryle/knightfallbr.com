@@ -12,13 +12,14 @@
     ToolbarRowWrapper,
   } from '@flowbite-svelte-plugins/texteditor'
   import type { Editor } from '@tiptap/core'
+  import { onMount } from 'svelte'
   import type { PageProps } from './$types'
 
   let { data }: PageProps = $props()
   let { content } = data
 
   let editor = $state<Editor | null>(null)
-  let isEditable = $state(true)
+  let isEditable = $state(content.length > 0)
   let textLength = $state(0)
 
   const handleEditableToggle = (editable: boolean) => {
@@ -26,21 +27,23 @@
     console.log('Editor is now:', editable ? 'editable' : 'read-only')
   }
 
-  $effect(() => {
-    if (editor) {
-      editor.on('update', ({ editor }) => {
-        const content = editor.getHTML()
-        console.log(content)
-        if (content.includes('<p></p>')) {
-          const cleanContent = content.replaceAll('<p></p>', '')
-          editor.commands.setContent(cleanContent, {
-            emitUpdate: false,
-          })
-        }
+  onMount(() => {
+    editor!.on('update', ({ editor }) => {
+      const content = editor.getHTML()
 
-        textLength = content.length
-      })
-    }
+      if (content.includes('<p></p>')) {
+        const cleanContent = content.replaceAll('<p></p>', '')
+
+        editor.commands.setContent(cleanContent, {
+          emitUpdate: false,
+          parseOptions: {
+            preserveWhitespace: true,
+          },
+        })
+      }
+
+      textLength = editor!.getText().length
+    })
   })
 </script>
 
