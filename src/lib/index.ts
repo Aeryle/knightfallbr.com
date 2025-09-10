@@ -5,4 +5,6 @@ export const saveText = (content: string) => {
   const url = page.url
   url.searchParams.set('nickname', content)
   replaceState(url, {})
+
+  return url
 }

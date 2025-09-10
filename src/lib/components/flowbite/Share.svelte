@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { saveText } from '$lib'
   import { generateButtonId, useEditableContext, type EditorBasicProps } from '@flowbite-svelte-plugins/texteditor'
   import ShareAllOutline from 'flowbite-svelte-icons/ShareAllOutline.svelte'
   import Tooltip from 'flowbite-svelte/Tooltip.svelte'
@@ -10,18 +11,14 @@
   let { editor }: Props = $props()
 
   const { editableContext, getDefaultButtonClass } = useEditableContext()
-  const isEditable = $derived(editableContext.isEditable ?? true)
   const uniqueId = generateButtonId('share')
-
-  let buttonClasses = $derived(getDefaultButtonClass(isEditable))
-  let isOpen = $state(false)
+  const buttonClasses = $derived(getDefaultButtonClass(true))
 
   const handleClick = async (event: MouseEvent) => {
     const html = btoa(editor?.getHTML() ?? '')
-    const url = new URL(location.href)
-    url.searchParams.set('nickname', html)
-    history.replaceState('', '', url)
+    const url = saveText(html)
     await navigator.clipboard.writeText(url.toString())
+
     alert('Share URL copied!')
   }
 </script>
