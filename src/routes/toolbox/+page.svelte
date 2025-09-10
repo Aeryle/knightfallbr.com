@@ -1,0 +1,66 @@
+<script lang="ts">
+  import Divider from '$lib/components/flowbite/Divider.svelte'
+  import Download from '$lib/components/flowbite/Download.svelte'
+  import FontSize from '$lib/components/flowbite/FontSize.svelte'
+  import Share from '$lib/components/flowbite/Share.svelte'
+  import TextColor from '$lib/components/flowbite/TextColor.svelte'
+  import {
+    CharacterCount,
+    EditableButton,
+    FormatButtonGroup,
+    TextEditor,
+    ToolbarRowWrapper,
+  } from '@flowbite-svelte-plugins/texteditor'
+  import type { Editor } from '@tiptap/core'
+  import type { PageProps } from './$types'
+
+  let { data }: PageProps = $props()
+  let { content } = data
+
+  let editor = $state<Editor | null>(null)
+  let isEditable = $state(true)
+  let textLength = $state(0)
+
+  const handleEditableToggle = (editable: boolean) => {
+    isEditable = editable
+    console.log('Editor is now:', editable ? 'editable' : 'read-only')
+  }
+
+  $effect(() => {
+    if (editor) {
+      editor.on('update', ({ editor }) => {
+        const content = editor.getText()
+        if (content.includes('\n') || content.includes('\r\n')) {
+          const cleanContent = content.replaceAll('\r\n', '').replaceAll('\n', '')
+          editor.commands.setContent(cleanContent)
+        }
+
+        textLength = content.length
+      })
+    }
+  })
+</script>
+
+<div class="container flex h-full flex-col items-center justify-center gap-8">
+  <h1 class="text-center text-3xl">Welcome to the nickname toolbox</h1>
+
+  <TextEditor class="w-full" bind:editor {content} {isEditable} contentprops={{ id: 'drag-handle-editable' }}>
+    <ToolbarRowWrapper>
+      <EditableButton {editor} bind:isEditable onToggle={handleEditableToggle} />
+      <Divider />
+      <FontSize {editor} />
+      <TextColor {editor} />
+      <Divider />
+      <FormatButtonGroup {editor} highlight={false} link={false} removeLink={false} br={false} />
+      <Divider />
+      <Share {editor} />
+      <Download {editor} {textLength} />
+    </ToolbarRowWrapper>
+
+    {#snippet footer()}
+      {#if editor}
+        <CharacterCount {editor} limit={30} />
+      {/if}
+    {/snippet}
+  </TextEditor>
+</div>
