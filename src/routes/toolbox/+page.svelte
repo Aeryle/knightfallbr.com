@@ -29,10 +29,13 @@
   $effect(() => {
     if (editor) {
       editor.on('update', ({ editor }) => {
-        const content = editor.getText()
-        if (content.includes('\n') || content.includes('\r\n')) {
-          const cleanContent = content.replaceAll('\r\n', '').replaceAll('\n', '')
-          editor.commands.setContent(cleanContent)
+        const content = editor.getHTML()
+        console.log(content)
+        if (content.includes('<p></p>')) {
+          const cleanContent = content.replaceAll('<p></p>', '')
+          editor.commands.setContent(cleanContent, {
+            emitUpdate: false,
+          })
         }
 
         textLength = content.length
