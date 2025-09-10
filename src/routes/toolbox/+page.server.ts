@@ -1,7 +1,9 @@
 export const load = ({ url }) => {
   const content = url.searchParams.get('nickname') ?? ''
 
-  return {
-    content: atob(content),
+  try {
+    return { content: atob(content) }
+  } catch {
+    return { content: '' }
   }
 }
