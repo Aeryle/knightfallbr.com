@@ -1,6 +1,6 @@
 <script lang="ts">
   import { saveText } from '$lib'
-  import { wrapBold, wrapColor, wrapFontSize, wrapItalic, wrapStrike } from '$lib/tmp-utils'
+  import { wrapBold, wrapColor, wrapFontSize, wrapItalic, wrapStrike } from '$lib/flowbite/utils'
   import { generateButtonId, useEditableContext, type EditorBasicProps } from '@flowbite-svelte-plugins/texteditor'
   import { type TextType } from '@tiptap/core'
   import { Tooltip } from 'flowbite-svelte'
@@ -16,8 +16,12 @@
   const { getDefaultButtonClass } = useEditableContext()
   const uniqueId = generateButtonId('share')
 
-  let isEditable = $derived(textLength <= 30)
+  let isEditable = $derived(textLength > 0 && textLength <= 30)
   let buttonClasses = $derived(getDefaultButtonClass(isEditable))
+
+  $effect(() => {
+    console.log({ textLength })
+  })
 
   const downloadFile = (content: string) => {
     var element = document.createElement('a')

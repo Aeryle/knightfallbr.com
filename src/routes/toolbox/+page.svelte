@@ -4,6 +4,7 @@
   import FontSize from '$lib/components/flowbite/FontSize.svelte'
   import Share from '$lib/components/flowbite/Share.svelte'
   import TextColor from '$lib/components/flowbite/TextColor.svelte'
+  import { stripNewLines } from '$lib/flowbite/utils'
   import { CharacterCount, FormatButtonGroup, TextEditor, ToolbarRowWrapper } from '@flowbite-svelte-plugins/texteditor'
   import type { Editor } from '@tiptap/core'
   import { onMount } from 'svelte'
@@ -13,17 +14,15 @@
   let { content } = data
 
   let editor = $state<Editor | null>(null)
-  let textLength = $state(content.length)
+  let textLength = $state(0)
 
   onMount(() => {
     editor!.on('update', ({ editor }) => {
-      const content = editor.getHTML()
-
-      if (content.includes('<p></p>'))
-        editor.commands.setContent(content.replaceAll('<p></p>', ''), {
-          emitUpdate: false,
-          parseOptions: { preserveWhitespace: true },
-        })
+      const content = stripNewLines(editor.getHTML())
+      editor.commands.setContent(content, {
+        emitUpdate: false,
+        parseOptions: { preserveWhitespace: true },
+      })
 
       textLength = editor!.getText().length
     })

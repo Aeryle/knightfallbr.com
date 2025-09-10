@@ -23,3 +23,5 @@ export const wrapUnderline = (content: string) => `<u>${content}</u>`
 export const wrapCode = (content: string) => `<mspace>${content}</mspace>`
 export const wrapSubscript = (content: string) => `<sub>${content}</sub>`
 export const wrapSuperscript = (content: string) => `<sup>${content}</sup>`
+
+export const stripNewLines = (content: string) => content.replaceAll('<p></p>', '').replaceAll('<br>', '')
