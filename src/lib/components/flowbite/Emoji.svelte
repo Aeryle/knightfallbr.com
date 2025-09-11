@@ -25,7 +25,7 @@
   }
 </script>
 
-<button id={uniqueId} class={buttonClasses} onmouseenter={() => updateEmoji()} onmouseleave={() => updateEmoji()}>
+<button id={uniqueId} class={buttonClasses} onmouseenter={updateEmoji}>
   <!-- <FontColorOutline class="h-6 w-6 shrink-0" /> -->
   <p class="h-6 w-6 shrink-0">{emoji}</p>
 
