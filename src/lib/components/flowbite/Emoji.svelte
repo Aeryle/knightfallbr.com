@@ -20,18 +20,12 @@
 
   const pickRandomEmoji = () => validEmojis[Math.floor(Math.random() * validEmojis.length)]
   let emoji = $state(pickRandomEmoji())
+  const updateEmoji = () => {
+    if (!isOpen) emoji = pickRandomEmoji()
+  }
 </script>
 
-<button
-  id={uniqueId}
-  class={buttonClasses}
-  onmouseenter={() => {
-    if (!isOpen) emoji = pickRandomEmoji()
-  }}
-  onmouseleave={() => {
-    if (!isOpen) emoji = pickRandomEmoji()
-  }}
->
+<button id={uniqueId} class={buttonClasses} onmouseenter={() => updateEmoji()} onmouseleave={() => updateEmoji()}>
   <!-- <FontColorOutline class="h-6 w-6 shrink-0" /> -->
   <p class="h-6 w-6 shrink-0">{emoji}</p>
 
@@ -41,9 +35,7 @@
         {#each validEmojis as emoji}
           <button
             type="button"
-            onclick={() => {
-              editor?.chain().focus().insertEmoji(emoji).run()
-            }}
+            onclick={() => editor?.chain().focus().insertEmoji(emoji).run()}
             class="justify-center transition-transform duration-150 hover:scale-110"
             title={emoji}
           >
