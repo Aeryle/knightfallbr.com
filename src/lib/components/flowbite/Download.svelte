@@ -73,7 +73,7 @@
       }
 
       if (isTextNode(node)) {
-        let temporary = ''
+        let temporary = node.text
 
         for (const { attrs = {}, type } of node.marks) {
           if (type === 'bold') temporary = wrapBold(temporary)
