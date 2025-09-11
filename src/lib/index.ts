@@ -3,7 +3,7 @@ import { page } from '$app/state'
 
 export const saveText = (content: string) => {
   const url = page.url
-  url.searchParams.set('nickname', content)
+  url.searchParams.set('nickname', btoa(encodeURIComponent(content)))
   replaceState(url, {})
 
   return url

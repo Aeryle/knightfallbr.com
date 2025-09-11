@@ -14,6 +14,26 @@ const convertedFontSizes = {
   '2rem': '100%',
   '3rem': '+1',
 }
+export const validEmojis = [
+  '😊',
+  '😋',
+  '😍',
+  '😎',
+  '😀',
+  '😄',
+  '😂',
+  '😃',
+  '😃',
+  '😄',
+  '😅',
+  '😩',
+  '😜',
+  '❓',
+  '🤣',
+  '🙂',
+  '☹️',
+  '☹️',
+] as const
 export const wrapFontSize = (content: string, size: keyof typeof convertedFontSizes) =>
   `<size=${convertedFontSizes[size]}>${content}</size>`
 export const wrapBold = (content: string) => `<b>${content}</b>`
@@ -23,5 +43,7 @@ export const wrapUnderline = (content: string) => `<u>${content}</u>`
 export const wrapCode = (content: string) => `<mspace>${content}</mspace>`
 export const wrapSubscript = (content: string) => `<sub>${content}</sub>`
 export const wrapSuperscript = (content: string) => `<sup>${content}</sup>`
+export const wrapEmoji = (content: (typeof validEmojis)[number]) =>
+  `<sprite=${validEmojis.findIndex(emoji => emoji === content)}>`
 
 export const stripNewLines = (content: string) => content.replaceAll('<p></p>', '').replaceAll('<br>', '')

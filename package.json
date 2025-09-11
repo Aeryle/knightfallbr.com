@@ -77,5 +77,8 @@
     "sharp",
     "unrs-resolver",
     "workerd"
-  ]
+  ],
+  "patchedDependencies": {
+    "@flowbite-svelte-plugins/texteditor@0.25.4": "patches/@flowbite-svelte-plugins%2Ftexteditor@0.25.4.patch"
+  }
 }

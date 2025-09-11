@@ -15,7 +15,7 @@
   const buttonClasses = $derived(getDefaultButtonClass(true))
 
   const handleClick = async (event: MouseEvent) => {
-    const html = btoa(editor?.getHTML() ?? '')
+    const html = editor!.getHTML()
     const url = saveText(html)
     await navigator.clipboard.writeText(url.toString())
 

@@ -18,7 +18,7 @@
   type Hex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'a' | 'b' | 'c' | 'd' | 'e' | 'f'
   interface Color {
     name: string
-    value: `#${Hex}${Hex}${Hex}${Hex}${Hex}${Hex}${Hex}${Hex}`
+    value: `#${Hex}${Hex}${Hex}${Hex}${Hex}${Hex}`
   }
 
   let { editor }: Props = $props()
@@ -66,9 +66,7 @@
   ]
 
   let buttonClasses = $derived(getDefaultButtonClass(isEditable))
-
   let isOpen = $state(false)
-  let colorValue: Color['value'] = $state('')
 </script>
 
 <button id={uniqueId} class={buttonClasses}>
@@ -82,8 +80,7 @@
         <input
           type="color"
           id="color"
-          bind:value={colorValue}
-          onchange={() => setTextColor(editor, colorValue)}
+          onchange={({ currentTarget }) => setTextColor(editor, currentTarget.value)}
           class="col-span-3 h-8 w-full rounded-md border border-gray-200 bg-gray-50 p-px px-1 group-hover:bg-gray-50 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:group-hover:bg-gray-700"
         />
 
@@ -107,6 +104,7 @@
           </button>
         {/each}
       </div>
+
       <DropdownItem onclick={() => removeTextColorFormatting(editor)} class="text-center">Remove color</DropdownItem>
     </div>
   </Dropdown>

@@ -1,6 +1,14 @@
 <script lang="ts">
   import { saveText } from '$lib'
-  import { wrapBold, wrapColor, wrapFontSize, wrapItalic, wrapStrike } from '$lib/flowbite/utils'
+  import {
+    validEmojis,
+    wrapBold,
+    wrapColor,
+    wrapEmoji,
+    wrapFontSize,
+    wrapItalic,
+    wrapStrike,
+  } from '$lib/flowbite/utils'
   import { generateButtonId, useEditableContext, type EditorBasicProps } from '@flowbite-svelte-plugins/texteditor'
   import { type TextType } from '@tiptap/core'
   import { Tooltip } from 'flowbite-svelte'
@@ -9,6 +17,13 @@
   interface Props {
     editor: EditorBasicProps['editor']
     textLength: number
+  }
+
+  interface EmojiType {
+    type: 'emoji'
+    attrs: {
+      emoji: (typeof validEmojis)[number]
+    }
   }
 
   let { editor, textLength }: Props = $props()
@@ -35,12 +50,16 @@
 
     document.body.removeChild(element)
   }
+
+  const isTextNode = (node: TextType | EmojiType): node is TextType => node.type === 'text'
+  const isEmojiNode = (node: TextType | EmojiType): node is EmojiType => node.type === 'emoji'
+
   const handleClick = () => {
-    const html = btoa(editor?.getHTML() ?? '')
-    saveText(html)
+    saveText(editor!.getHTML())
 
     // TODO: Write a parser that transforms the editor's content back to TMP's tags and then download the file
-    const nodes = editor?.getJSON().content[0].content as TextType[]
+    const nodes = editor?.getJSON().content[0].content as (TextType | EmojiType)[]
+    console.log('🚀 ~ handleClick ~ nodes:', nodes)
 
     // TODO: Say something if content is empty
     if (!nodes) return
@@ -48,26 +67,29 @@
     let result = ''
 
     for (const node of nodes) {
-      if (!node.marks) {
+      if (isTextNode(node) && !node.marks) {
         result += node.text
         continue
       }
 
-      let temporary = node.text
-      console.log("Node's marks:", node.marks)
+      if (isTextNode(node)) {
+        let temporary = ''
 
-      for (const { attrs = {}, type } of node.marks) {
-        if (type === 'bold') temporary = wrapBold(temporary)
-        if (type === 'italic') temporary = wrapItalic(temporary)
-        if (type === 'strike') temporary = wrapStrike(temporary)
-        if (type === 'underline') temporary = wrapStrike(temporary)
-        if (attrs.color) temporary = wrapColor(temporary, attrs.color)
-        if (attrs.fontSize) temporary = wrapFontSize(temporary, attrs.fontSize)
+        for (const { attrs = {}, type } of node.marks) {
+          if (type === 'bold') temporary = wrapBold(temporary)
+          if (type === 'italic') temporary = wrapItalic(temporary)
+          if (type === 'strike') temporary = wrapStrike(temporary)
+          if (type === 'underline') temporary = wrapStrike(temporary)
+          if (attrs.color) temporary = wrapColor(temporary, attrs.color)
+          if (attrs.fontSize) temporary = wrapFontSize(temporary, attrs.fontSize)
+        }
+
+        result += temporary
       }
-      result += temporary
+      if (isEmojiNode(node)) result += wrapEmoji(node.attrs.emoji)
     }
 
-    console.log({ result })
+    console.log('🚀 ~ handleClick ~ result:', result)
   }
 </script>
 
