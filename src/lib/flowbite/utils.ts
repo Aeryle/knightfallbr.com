@@ -34,7 +34,7 @@ export const validEmojis = [
 ] as const
 
 export const wrapColor = (content: string, color: string) => {
-  const [r, g, b, a = 1] = rgbToHex(color)
+  const [r, g, b, a = 'ff'] = rgbToHex(color)
 
   return `<color=#${r}${g}${b}${a}>${content}</color>`
 }
