@@ -55,7 +55,7 @@
   const isEmojiNode = (node: TextType | EmojiType): node is EmojiType => node.type === 'emoji'
 
   const handleClick = () => {
-    saveText(editor!.getHTML())
+    saveText(editor!)
 
     // TODO: Write a parser that transforms the editor's content back to TMP's tags and then download the file
     const nodes = editor?.getJSON().content[0].content as (TextType | EmojiType)[]

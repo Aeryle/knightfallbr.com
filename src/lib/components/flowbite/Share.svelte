@@ -15,8 +15,7 @@
   const buttonClasses = $derived(getDefaultButtonClass(true))
 
   const handleClick = async (event: MouseEvent) => {
-    const html = editor!.getHTML()
-    const url = saveText(html)
+    const url = saveText(editor!)
     await navigator.clipboard.writeText(url.toString())
 
     alert('Share URL copied!')
