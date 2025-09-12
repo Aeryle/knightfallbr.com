@@ -2,7 +2,7 @@ import type { Editor, TextType } from '@tiptap/core'
 
 import type { EmojiType } from '$lib/flowbite/extensions/emoji-node'
 
-import { wrapBold, wrapColor, wrapEmoji, wrapFontSize, wrapItalic, wrapStrike } from './flowbite/utils'
+import { wrapBold, wrapColor, wrapEmoji, wrapFontSize, wrapItalic, wrapStrike, wrapUnderline } from './flowbite/utils'
 
 const isTextNode = (node: TextType | EmojiType): node is TextType => node.type === 'text'
 const isEmojiNode = (node: TextType | EmojiType): node is EmojiType => node.type === 'emoji'
@@ -26,7 +26,7 @@ export const convertToTMP = (editor: Editor) => {
         if (type === 'bold') temporary = wrapBold(temporary)
         if (type === 'italic') temporary = wrapItalic(temporary)
         if (type === 'strike') temporary = wrapStrike(temporary)
-        if (type === 'underline') temporary = wrapStrike(temporary)
+        if (type === 'underline') temporary = wrapUnderline(temporary)
         if (attrs.color) temporary = wrapColor(temporary, attrs.color)
         if (attrs.fontSize) temporary = wrapFontSize(temporary, attrs.fontSize)
       }
