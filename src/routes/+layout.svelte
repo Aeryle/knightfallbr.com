@@ -5,6 +5,7 @@
 
   import BackgroundImage_Dark from '../assets/images/BackgroundImage-Dark.webp?enhanced'
 
+  import OutlineButton from '$lib/components/OutlineButton.svelte'
   import '../app.css'
 
   let { data, children } = $props()
@@ -75,6 +76,10 @@
   fetchpriority="high"
   src={BackgroundImage_Dark}
 />
+
+<header class="container flex justify-end">
+  <OutlineButton mode="link" href="/toolbox">Username editor</OutlineButton>
+</header>
 
 {@render children()}
 
