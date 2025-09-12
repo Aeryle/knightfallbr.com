@@ -27,6 +27,8 @@ export const convertToTMP = (editor: Editor) => {
         if (type === 'italic') temporary = wrapItalic(temporary)
         if (type === 'strike') temporary = wrapStrike(temporary)
         if (type === 'underline') temporary = wrapUnderline(temporary)
+        if (type === 'subscript') temporary = wrapSubscript(temporary)
+        if (type === 'superscript') temporary = wrapSuperscript(temporary)
         if (attrs.color) temporary = wrapColor(temporary, attrs.color)
         if (attrs.fontSize) temporary = wrapFontSize(temporary, attrs.fontSize)
       }
