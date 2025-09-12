@@ -1,9 +1,9 @@
 export const rgbToHex = (color: string) => {
   const colors = color.startsWith('#')
-    ? color.replace('#', '').split(/.{2}/g)
+    ? (color.replace('#', '').matchAll(/.{2}/g) ?? [])
     : color.replace('rgb(', '').replace(')', '').split(', ')
 
-  return colors.map(color => parseInt(color).toString(16).padStart(2, '0'))
+  return colors.map(color => parseInt(color.toString()).toString(16).padStart(2, '0'))
 }
 
 const convertedFontSizes = {

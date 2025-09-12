@@ -2,7 +2,17 @@ import type { Editor, TextType } from '@tiptap/core'
 
 import type { EmojiType } from '$lib/flowbite/extensions/emoji-node'
 
-import { wrapBold, wrapColor, wrapEmoji, wrapFontSize, wrapItalic, wrapStrike, wrapUnderline } from './flowbite/utils'
+import {
+  wrapBold,
+  wrapColor,
+  wrapEmoji,
+  wrapFontSize,
+  wrapItalic,
+  wrapStrike,
+  wrapSubscript,
+  wrapSuperscript,
+  wrapUnderline,
+} from './flowbite/utils'
 
 const isTextNode = (node: TextType | EmojiType): node is TextType => node.type === 'text'
 const isEmojiNode = (node: TextType | EmojiType): node is EmojiType => node.type === 'emoji'
