@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dev } from '$app/environment'
   import Divider from '$lib/components/flowbite/Divider.svelte'
   import Download from '$lib/components/flowbite/Download.svelte'
   import Emoji from '$lib/components/flowbite/Emoji.svelte'
@@ -47,6 +48,9 @@
       <Divider />
       <Share {editor} />
       <Download {editor} {textLength} />
+      {#if dev}
+        <Download {editor} {textLength} force={true} />
+      {/if}
     </ToolbarRowWrapper>
 
     {#snippet footer()}

@@ -1,14 +1,8 @@
 <script lang="ts">
+  import { dev } from '$app/environment'
   import { saveText } from '$lib'
-  import {
-    validEmojis,
-    wrapBold,
-    wrapColor,
-    wrapEmoji,
-    wrapFontSize,
-    wrapItalic,
-    wrapStrike,
-  } from '$lib/flowbite/utils'
+  import type { EmojiType } from '$lib/flowbite/extensions/emoji-node'
+  import { convertToTMP } from '$lib/textmeshpro-converter'
   import { generateButtonId, useEditableContext, type EditorBasicProps } from '@flowbite-svelte-plugins/texteditor'
   import { type TextType } from '@tiptap/core'
   import { Tooltip } from 'flowbite-svelte'
@@ -17,16 +11,10 @@
   interface Props {
     editor: EditorBasicProps['editor']
     textLength: number
+    force?: boolean
   }
 
-  interface EmojiType {
-    type: 'emoji'
-    attrs: {
-      emoji: (typeof validEmojis)[number]
-    }
-  }
-
-  let { editor, textLength }: Props = $props()
+  let { editor, textLength, force = false }: Props = $props()
 
   const { getDefaultButtonClass } = useEditableContext()
   const uniqueId = generateButtonId('share')
@@ -34,14 +22,12 @@
   let isEditable = $derived(textLength > 0 && textLength <= 30)
   let buttonClasses = $derived(getDefaultButtonClass(isEditable))
 
-  $effect(() => {
-    console.log({ textLength })
-  })
-
   const downloadFile = (content: string) => {
+    const blob = new Blob([content], { type: 'text/plain' })
+
     var element = document.createElement('a')
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content))
-    element.setAttribute('download', 'NickNameDefiner.txt')
+    element.href = URL.createObjectURL(blob)
+    element.download = 'NickNameDefiner.txt'
 
     element.style.display = 'none'
     document.body.appendChild(element)
@@ -51,45 +37,19 @@
     document.body.removeChild(element)
   }
 
-  const isTextNode = (node: TextType | EmojiType): node is TextType => node.type === 'text'
-  const isEmojiNode = (node: TextType | EmojiType): node is EmojiType => node.type === 'emoji'
-
   const handleClick = () => {
     saveText(editor!)
 
-    // TODO: Write a parser that transforms the editor's content back to TMP's tags and then download the file
     const nodes = editor?.getJSON().content[0].content as (TextType | EmojiType)[]
-    console.log('🚀 ~ handleClick ~ nodes:', nodes)
-
-    // TODO: Say something if content is empty
     if (!nodes) return
 
-    let result = ''
+    const result = convertToTMP(editor!)
+    if (!result) return
 
-    for (const node of nodes) {
-      if (isTextNode(node) && !node.marks) {
-        result += node.text
-        continue
-      }
+    console.debug('Converted result is')
+    console.debug(result)
 
-      if (isTextNode(node)) {
-        let temporary = node.text
-
-        for (const { attrs = {}, type } of node.marks) {
-          if (type === 'bold') temporary = wrapBold(temporary)
-          if (type === 'italic') temporary = wrapItalic(temporary)
-          if (type === 'strike') temporary = wrapStrike(temporary)
-          if (type === 'underline') temporary = wrapStrike(temporary)
-          if (attrs.color) temporary = wrapColor(temporary, attrs.color)
-          if (attrs.fontSize) temporary = wrapFontSize(temporary, attrs.fontSize)
-        }
-
-        result += temporary
-      }
-      if (isEmojiNode(node)) result += wrapEmoji(node.attrs.emoji)
-    }
-
-    console.log('🚀 ~ handleClick ~ result:', result)
+    if (!dev || force) downloadFile(result)
   }
 </script>
 
@@ -97,4 +57,9 @@
   <DownloadOutline class="h-6 w-6 shrink-0" />
 </button>
 
-<Tooltip>Download <span class="text-green-400">NickNameDefiner.txt</span></Tooltip>
+<Tooltip>
+  {#if force}
+    <span class="text-red-600">Force</span>
+  {/if}
+  {dev ? 'Log' : 'Download'} <span class="text-green-400">NickNameDefiner.txt</span></Tooltip
+>

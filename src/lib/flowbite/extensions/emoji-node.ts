@@ -14,6 +14,13 @@ declare module '@tiptap/core' {
   }
 }
 
+export interface EmojiType {
+  type: 'emoji'
+  attrs: {
+    emoji: (typeof validEmojis)[number]
+  }
+}
+
 // Create regex from valid emojis only
 const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const EMOJI_REGEX = new RegExp(validEmojis.map(escapeRegExp).join('|'), 'g')
