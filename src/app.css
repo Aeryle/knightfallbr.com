@@ -11,7 +11,7 @@
 }
 
 .tiptap {
-  @apply max-h-96 overflow-scroll;
+  @apply max-h-96 overflow-y-auto;
 }
 
 .tiptap p {
