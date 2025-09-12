@@ -38,6 +38,8 @@
   }
 
   const handleClick = () => {
+    if (editor!.getText().length > 30) return
+
     saveText(editor!)
 
     const nodes = editor?.getJSON().content[0].content as (TextType | EmojiType)[]
