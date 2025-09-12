@@ -8,9 +8,9 @@ export const rgbToHex = (rgb: string) => {
 }
 
 const convertedFontSizes = {
-  '1rem': '-1',
+  '1rem': '50',
   '2rem': '100%',
-  '3rem': '+1',
+  '3rem': '200%',
 } as const
 export const validEmojis = [
   '😊',
