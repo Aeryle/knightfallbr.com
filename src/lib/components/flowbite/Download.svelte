@@ -63,5 +63,5 @@
   {#if force}
     <span class="text-red-600">Force</span>
   {/if}
-  {dev ? 'Log' : 'Download'} <span class="text-green-400">NickNameDefiner.txt</span></Tooltip
+  {dev || force ? 'Log' : 'Download'} <span class="text-green-400">NickNameDefiner.txt</span></Tooltip
 >
