@@ -7,7 +7,6 @@
   import Share from '$lib/components/flowbite/Share.svelte'
   import TextColor from '$lib/components/flowbite/TextColor.svelte'
   import { createEditorConfig } from '$lib/flowbite/editor-config'
-  import { stripNewLines } from '$lib/flowbite/utils'
   import { CharacterCount, FormatButtonGroup, TextEditor, ToolbarRowWrapper } from '@flowbite-svelte-plugins/texteditor'
   import { Editor } from '@tiptap/core'
   import { onMount } from 'svelte'
@@ -23,7 +22,6 @@
     textLength = editor!.getText().length
 
     editor!.on('update', async ({ editor }) => {
-      stripNewLines(editor.getHTML())
       textLength = editor.getText().length
     })
   })
