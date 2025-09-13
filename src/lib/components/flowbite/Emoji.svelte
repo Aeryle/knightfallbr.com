@@ -26,7 +26,6 @@
 </script>
 
 <button id={uniqueId} class={buttonClasses} onmouseenter={updateEmoji}>
-  <!-- <FontColorOutline class="h-6 w-6 shrink-0" /> -->
   <p class="h-6 w-6 shrink-0">{emoji}</p>
 
   <Dropdown bind:isOpen simple triggeredBy="#{uniqueId}" triggerDelay={0}>
@@ -39,7 +38,7 @@
             class="justify-center transition-transform duration-150 hover:scale-110"
             title={emoji}
           >
-            <span class="text-4xl">{emoji}</span>
+            <span class="font-emoji text-4xl">{emoji}</span>
           </button>
         {/each}
       </div>
