@@ -1,1 +1,19 @@
 @import 'tailwindcss';
+@import 'flowbite/src/themes/default.css';
+
+@plugin 'flowbite/plugin';
+
+@source '../node_modules/flowbite-svelte/dist';
+@source '../node_modules/flowbite-svelte-icons/dist';
+
+@theme {
+  --font-emoji: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+}
+
+.tiptap {
+  @apply max-h-96 overflow-y-auto;
+}
+
+.tiptap p {
+  @apply text-[2rem];
+}

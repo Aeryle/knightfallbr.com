@@ -1,9 +1,8 @@
 <script lang="ts">
+  import CircleButton from '$lib/components/CircleButton.svelte'
+  import OutlineButton from '$lib/components/OutlineButton.svelte'
   import { faDiscord } from '@fortawesome/free-brands-svg-icons'
-  import { MetaTags, JsonLd } from 'svelte-meta-tags'
-  import CircleButton from '../components/CircleButton.svelte'
-  import OutlineButton from '../components/OutlineButton.svelte'
-  import BackgroundImage_Dark from '../assets/images/BackgroundImage-Dark.webp?enhanced'
+  import { JsonLd, MetaTags } from 'svelte-meta-tags'
 
   const { data } = $props()
   const { session } = $derived(data)
@@ -36,24 +35,8 @@
   }}
 />
 
-<!-- TODO: Add support for Light and Dark -->
-<enhanced:img
-  class="fixed top-0 left-0 -z-50 h-screen w-screen object-cover"
-  src={BackgroundImage_Dark}
-  alt="KnightfallBR background"
-  fetchpriority="high"
-/>
-
 <h1 class="text-center text-6xl [word-spacing:100vw]">UNDER CONSTRUCTION</h1>
 
-<!-- <a
-    class="p-4 dark:bg-white bg-gray-800 rounded-4xl dark:text-black text-white mt-4"
-    href={session ? '/auth/logout' : '/auth/login'}
-    data-sveltekit-preload-code="off"
-    data-sveltekit-preload-data="off"
-  >
-    {session ? 'Logout' : 'Login with Discord'}
-  </a> -->
 {#if !session}
   <OutlineButton mode="link" href="/auth/login">Notify me by email</OutlineButton>
 {:else}

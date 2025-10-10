@@ -1,0 +1,676 @@
+diff --git a/dist/TextEditor.svelte b/dist/TextEditor.svelte
+index 633beae364cb430c347c393c0a519e856d41fe14..28bea5482f7a0e8aebdf5045e6191b729a491ac4 100644
+--- a/dist/TextEditor.svelte
++++ b/dist/TextEditor.svelte
+@@ -1,69 +1,82 @@
+ <script module>
+-  import { writable } from 'svelte/store';
+-  import type { TableOfContentData } from '@tiptap/extension-table-of-contents';
++  import type { TableOfContentData } from '@tiptap/extension-table-of-contents'
++  import { writable } from 'svelte/store'
+ 
+-  export const tocItems = writable<TableOfContentData>([]);
++  export const tocItems = writable<TableOfContentData>([])
+ </script>
+ 
+ <script lang="ts">
+-  import { onDestroy, setContext, getContext } from 'svelte';
+-  import { type EditorProviderProps, EditorWrapper, ContentWrapper, ToolbarWrapper, SvelteRenderer, FloatingMenu, getMenuConfig, Toc, cn, type EditableContext, type EditorExtensionConfigs } from './';
+-  import { Editor } from '@tiptap/core';
+-  import type { Extensions } from '@tiptap/core';
+-  import { Blockquote } from '@tiptap/extension-blockquote';
+-  import { Bold } from '@tiptap/extension-bold';
+-  import { Code } from '@tiptap/extension-code';
+-  import { Document } from '@tiptap/extension-document';
+-  import { HardBreak } from '@tiptap/extension-hard-break';
+-  import { Heading } from '@tiptap/extension-heading';
+-  import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
+-  import { Italic } from '@tiptap/extension-italic';
+-  import { Link } from '@tiptap/extension-link';
+-  import { BulletList, ListItem, ListKeymap, OrderedList } from '@tiptap/extension-list';
+-  import { Paragraph } from '@tiptap/extension-paragraph';
+-  import { Strike } from '@tiptap/extension-strike';
+-  import { Text } from '@tiptap/extension-text';
+-  import { Underline } from '@tiptap/extension-underline';
+-  import { TrailingNode, UndoRedo } from '@tiptap/extensions';
++  import type { Extensions } from '@tiptap/core'
++  import { Editor } from '@tiptap/core'
++  import { Blockquote } from '@tiptap/extension-blockquote'
++  import { Bold } from '@tiptap/extension-bold'
++  import { Code } from '@tiptap/extension-code'
++  import { Document } from '@tiptap/extension-document'
++  import { HardBreak } from '@tiptap/extension-hard-break'
++  import { Heading } from '@tiptap/extension-heading'
++  import { HorizontalRule } from '@tiptap/extension-horizontal-rule'
++  import { Italic } from '@tiptap/extension-italic'
++  import { Link } from '@tiptap/extension-link'
++  import { BulletList, ListItem, ListKeymap, OrderedList } from '@tiptap/extension-list'
++  import { Paragraph } from '@tiptap/extension-paragraph'
++  import { Strike } from '@tiptap/extension-strike'
++  import { Text } from '@tiptap/extension-text'
++  import { Underline } from '@tiptap/extension-underline'
++  import { TrailingNode, UndoRedo } from '@tiptap/extensions'
++  import { getContext, onDestroy, setContext } from 'svelte'
++  import {
++    cn,
++    ContentWrapper,
++    type EditableContext,
++    type EditorExtensionConfigs,
++    type EditorProviderProps,
++    EditorWrapper,
++    FloatingMenu,
++    getMenuConfig,
++    SvelteRenderer,
++    Toc,
++    ToolbarWrapper,
++  } from './'
+   // end of starter-kit
+ 
+   // functionality
+-  import CharacterCount from '@tiptap/extension-character-count';
+-  import Color from '@tiptap/extension-color';
+-  import { Details, DetailsSummary, DetailsContent } from '@tiptap/extension-details';
+-  import Emoji, { gitHubEmojis } from '@tiptap/extension-emoji';
+-  import FileHandler from '@tiptap/extension-file-handler';
+-  import Focus from '@tiptap/extension-focus';
+-  import FontFamily from '@tiptap/extension-font-family';
+-  import Typography from '@tiptap/extension-typography';
++  import CharacterCount from '@tiptap/extension-character-count'
++  import Color from '@tiptap/extension-color'
++  import { Details, DetailsContent, DetailsSummary } from '@tiptap/extension-details'
++  import Emoji, { gitHubEmojis } from '@tiptap/extension-emoji'
++  import FileHandler from '@tiptap/extension-file-handler'
++  import Focus from '@tiptap/extension-focus'
++  import FontFamily from '@tiptap/extension-font-family'
++  import Typography from '@tiptap/extension-typography'
+   // import HardBreak from '@tiptap/extension-hard-break';
+-  import Highlight from '@tiptap/extension-highlight';
+-  import InvisibleCharacters from '@tiptap/extension-invisible-characters';
++  import Highlight from '@tiptap/extension-highlight'
++  import InvisibleCharacters from '@tiptap/extension-invisible-characters'
+   // import Link from '@tiptap/extension-link';
+-  import Image from '@tiptap/extension-image';
+-  import { Mathematics } from '@tiptap/extension-mathematics';
+-  import NodeRange from '@tiptap/extension-node-range';
+-  import Placeholder from '@tiptap/extension-placeholder';
+-  import Subscript from '@tiptap/extension-subscript';
+-  import Superscript from '@tiptap/extension-superscript';
+-  import TaskList from '@tiptap/extension-task-list';
+-  import TaskItem from '@tiptap/extension-task-item';
+-  import { BackgroundColor, LineHeight, TextStyle } from '@tiptap/extension-text-style';
+-  import { TableKit } from '@tiptap/extension-table';
+-  import TextAlign from '@tiptap/extension-text-align';
+-  import Youtube from '@tiptap/extension-youtube';
+-  import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+-  import { common, createLowlight } from 'lowlight';
+-  import emojiSuggestion from './emoji/emojiSuggestion';
+-  import Mention from '@tiptap/extension-mention';
+-  import { createMentionSuggestion } from './mention/mentionSuggestion';
+-  import { FloatingMenuPlugin } from '@tiptap/extension-floating-menu';
+-  import TableOfContents, { getHierarchicalIndexes } from '@tiptap/extension-table-of-contents';
++  import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
++  import { FloatingMenuPlugin } from '@tiptap/extension-floating-menu'
++  import Image from '@tiptap/extension-image'
++  import { Mathematics } from '@tiptap/extension-mathematics'
++  import Mention from '@tiptap/extension-mention'
++  import NodeRange from '@tiptap/extension-node-range'
++  import Placeholder from '@tiptap/extension-placeholder'
++  import Subscript from '@tiptap/extension-subscript'
++  import Superscript from '@tiptap/extension-superscript'
++  import { TableKit } from '@tiptap/extension-table'
++  import TableOfContents, { getHierarchicalIndexes } from '@tiptap/extension-table-of-contents'
++  import TaskItem from '@tiptap/extension-task-item'
++  import TaskList from '@tiptap/extension-task-list'
++  import TextAlign from '@tiptap/extension-text-align'
++  import { BackgroundColor, LineHeight, TextStyle } from '@tiptap/extension-text-style'
++  import Youtube from '@tiptap/extension-youtube'
++  import { common, createLowlight } from 'lowlight'
++  import emojiSuggestion from './emoji/emojiSuggestion'
++  import { createMentionSuggestion } from './mention/mentionSuggestion'
+ 
+   let {
+     content,
+     editorClass = 'format lg:format-lg dark:format-invert focus:outline-none format-blue max-w-none',
+     editor = $bindable<Editor | null>(null),
++    config = {},
+     children,
+     footer,
+     emoji = true,
+@@ -78,17 +91,17 @@
+     toc,
+     contentprops,
+     isEditable = true,
+-    autofocusPosition = false
+-  }: EditorProviderProps = $props();
++    autofocusPosition = false,
++  }: EditorProviderProps = $props()
+ 
+   const editableContext: EditableContext = {
+     get isEditable() {
+-      return isEditable;
+-    }
+-  };
+-  setContext('isEditable', editableContext);
++      return isEditable
++    },
++  }
++  setContext('isEditable', editableContext)
+ 
+-  const extensionConfigs = getContext<EditorExtensionConfigs>('editorExtensionConfigs') || {};
++  const extensionConfigs = getContext<EditorExtensionConfigs>('editorExtensionConfigs') || {}
+ 
+   const {
+     blockquoteOptions,
+@@ -132,15 +145,15 @@
+     placeholderOptions,
+     trailingNodeOptions,
+     typographyOptions,
+-    undoRedoOptions
+-  } = extensionConfigs;
++    undoRedoOptions,
++  } = extensionConfigs
+ 
+-  let editorElement = $state<HTMLDivElement | null>(null);
++  let editorElement = $state<HTMLDivElement | null>(null)
+   // for floating menu
+-  let floatingElement: HTMLDivElement | null = null;
+-  let floatingMenuRenderer: SvelteRenderer | null = null;
++  let floatingElement: HTMLDivElement | null = null
++  let floatingMenuRenderer: SvelteRenderer | null = null
+ 
+-  const lowlight = createLowlight(common);
++  const lowlight = createLowlight(common)
+ 
+   // custom for fontsize dropdown
+   const FontSizeTextStyle = TextStyle.extend({
+@@ -148,20 +161,20 @@
+       return {
+         fontSize: {
+           default: null,
+-          parseHTML: (element) => element.style.fontSize,
+-          renderHTML: (attributes) => {
++          parseHTML: element => element.style.fontSize,
++          renderHTML: attributes => {
+             if (!attributes.fontSize) {
+-              return {};
++              return {}
+             }
+-            return { style: 'font-size: ' + attributes.fontSize };
+-          }
+-        }
+-      };
+-    }
+-  });
++            return { style: 'font-size: ' + attributes.fontSize }
++          },
++        },
++      }
++    },
++  })
+ 
+   $effect(() => {
+-    $inspect('isEdiatble in TextEditor: ', isEditable);
++    $inspect('isEdiatble in TextEditor: ', isEditable)
+     if (editorElement && !editor) {
+       const extensions: Extensions = [
+         Document,
+@@ -170,14 +183,14 @@
+         BulletList.configure(bulletListOptions || {}),
+         CodeBlockLowlight.configure({
+           lowlight,
+-          ...(codeBlockLowlightOptions || {})
++          ...(codeBlockLowlightOptions || {}),
+         }),
+         Details.configure({
+           persist: true,
+           HTMLAttributes: {
+-            class: 'details'
++            class: 'details',
+           },
+-          ...(detailsOptions || {})
++          ...(detailsOptions || {}),
+         }),
+         DetailsSummary.configure(detailsSummaryOptions || {}),
+         DetailsContent.configure(detailsContentOptions || {}),
+@@ -187,8 +200,8 @@
+                 emojis: gitHubEmojis,
+                 enableEmoticons: true,
+                 suggestion: emojiSuggestion,
+-                ...(emojiOptions || {})
+-              })
++                ...(emojiOptions || {}),
++              }),
+             ]
+           : []),
+         HardBreak.configure(hardBreakOptions || {}),
+@@ -201,49 +214,49 @@
+               Mathematics.configure({
+                 inlineOptions: {
+                   onClick: (node, pos) => {
+-                    const katex = prompt('Enter new calculation:', node.attrs.latex);
++                    const katex = prompt('Enter new calculation:', node.attrs.latex)
+                     if (katex) {
+-                      editor?.chain().setNodeSelection(pos).updateInlineMath({ latex: katex }).focus().run();
++                      editor?.chain().setNodeSelection(pos).updateInlineMath({ latex: katex }).focus().run()
+                     }
+-                  }
++                  },
+                 },
+                 blockOptions: {
+                   onClick: (node, pos) => {
+-                    const katex = prompt('Enter new calculation:', node.attrs.latex);
++                    const katex = prompt('Enter new calculation:', node.attrs.latex)
+                     if (katex) {
+-                      editor?.chain().setNodeSelection(pos).updateBlockMath({ latex: katex }).focus().run();
++                      editor?.chain().setNodeSelection(pos).updateBlockMath({ latex: katex }).focus().run()
+                     }
+-                  }
++                  },
+                 },
+                 katexOptions: {
+                   throwOnError: false, // don't throw an error if the LaTeX code is invalid
+                   macros: {
+                     '\\R': '\\mathbb{R}', // add a macro for the real numbers
+-                    '\\N': '\\mathbb{N}' // add a macro for the natural numbers
+-                  }
++                    '\\N': '\\mathbb{N}', // add a macro for the natural numbers
++                  },
+                 },
+-                ...(mathematicsOptions || {})
+-              })
++                ...(mathematicsOptions || {}),
++              }),
+             ]
+           : []),
+         ...(mentions
+           ? [
+               Mention.configure({
+                 suggestion: createMentionSuggestion(mentions),
+-                ...(mentionOptions || {})
+-              })
++                ...(mentionOptions || {}),
++              }),
+             ]
+           : []),
+         OrderedList.configure(orderedListOptions || {}),
+         Paragraph.configure(paragraphOptions || {}),
+         TableKit.configure({
+           table: { resizable: true },
+-          ...(tableKitOptions || {})
++          ...(tableKitOptions || {}),
+         }),
+         TaskList.configure(taskListOptions || {}),
+         TaskItem.configure({
+           nested: true,
+-          ...(taskItemOptions || {})
++          ...(taskItemOptions || {}),
+         }),
+         Text,
+         Youtube.configure(youtubeOptions || {}),
+@@ -254,7 +267,7 @@
+         Italic.configure(italicOptions || {}),
+         Link.configure({
+           openOnClick: false,
+-          ...(italicOptions || {})
++          ...(italicOptions || {}),
+         }),
+         Strike.configure(strikeOptions || {}),
+         Subscript.configure(subscriptOptions || {}),
+@@ -270,54 +283,54 @@
+               FileHandler.configure({
+                 allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+                 onDrop: (currentEditor, files, pos) => {
+-                  files.forEach((file) => {
+-                    const fileReader = new FileReader();
++                  files.forEach(file => {
++                    const fileReader = new FileReader()
+ 
+-                    fileReader.readAsDataURL(file);
++                    fileReader.readAsDataURL(file)
+                     fileReader.onload = () => {
+                       currentEditor
+                         .chain()
+                         .insertContentAt(pos, {
+                           type: 'image',
+                           attrs: {
+-                            src: fileReader.result
+-                          }
++                            src: fileReader.result,
++                          },
+                         })
+                         .focus()
+-                        .run();
+-                    };
+-                  });
++                        .run()
++                    }
++                  })
+                 },
+                 onPaste: (currentEditor, files) => {
+-                  files.forEach((file) => {
+-                    const fileReader = new FileReader();
++                  files.forEach(file => {
++                    const fileReader = new FileReader()
+ 
+-                    fileReader.readAsDataURL(file);
++                    fileReader.readAsDataURL(file)
+                     fileReader.onload = () => {
+                       currentEditor
+                         .chain()
+                         .insertContentAt(currentEditor.state.selection.anchor, {
+                           type: 'image',
+                           attrs: {
+-                            src: fileReader.result
+-                          }
++                            src: fileReader.result,
++                          },
+                         })
+                         .focus()
+-                        .run();
+-                    };
+-                  });
+-                }
+-              })
++                        .run()
++                    }
++                  })
++                },
++              }),
+             ]
+           : []),
+         Focus.configure(focusOptions || {}),
+         FontFamily.configure({
+           types: ['textStyle'],
+-          ...(fontFamilyOptions || {})
++          ...(fontFamilyOptions || {}),
+         }),
+         InvisibleCharacters.configure({
+           visible: false,
+-          ...(invisibleCharactersOptions || {})
++          ...(invisibleCharactersOptions || {}),
+         }),
+         LineHeight.configure(lineHeightOptions || {}),
+         ListKeymap.configure(listKeymapOptions || {}),
+@@ -325,35 +338,35 @@
+           includeChildren: true,
+           placeholder: ({ node }) => {
+             if (node.type.name === 'detailsSummary') {
+-              return summary;
++              return summary
+             }
+             if (node.type.name === 'detailsContent') {
+-              return detailsPlaceholder;
++              return detailsPlaceholder
+             }
+-            return placeholder;
++            return placeholder
+           },
+-          ...(placeholderOptions || {})
++          ...(placeholderOptions || {}),
+         }),
+         NodeRange.configure({
+           // allow to select only on depth 0
+           // depth: 0,
+-          key: null
++          key: null,
+         }),
+         ...(toc
+           ? [
+               TableOfContents.configure({
+                 getIndex: getHierarchicalIndexes,
+                 onUpdate(content) {
+-                  tocItems.set(content);
+-                }
+-              })
++                  tocItems.set(content)
++                },
++              }),
+             ]
+           : []),
+         TextAlign.configure({ types: ['heading', 'paragraph'] }),
+         TrailingNode.configure(trailingNodeOptions || {}),
+         Typography.configure(typographyOptions || {}),
+-        UndoRedo.configure(undoRedoOptions || {})
+-      ];
++        UndoRedo.configure(undoRedoOptions || {}),
++      ]
+ 
+       editor = new Editor({
+         element: editorElement,
+@@ -362,31 +375,32 @@
+         content,
+         editorProps: {
+           attributes: {
+-            class: editorClass
+-          }
+-        }
+-      });
++            class: editorClass,
++          },
++        },
++        ...config,
++      })
+ 
+       if (floatingMenu && editor) {
+-        setupFloatingMenu();
++        setupFloatingMenu()
+       }
+     }
+-  });
++  })
+ 
+   function setupFloatingMenu() {
+-    if (!editor || floatingMenuRenderer) return;
++    if (!editor || floatingMenuRenderer) return
+ 
+     setTimeout(() => {
+-      const floatingConfig = getMenuConfig(floatingMenu);
+-      floatingElement = document.createElement('div');
+-      floatingElement.style.zIndex = '50';
+-      floatingElement.style.position = 'absolute';
+-      floatingElement.style.visibility = 'hidden';
+-      floatingElement.style.opacity = '0';
+-      floatingElement.style.transition = 'opacity 0.2s ease-in-out';
++      const floatingConfig = getMenuConfig(floatingMenu)
++      floatingElement = document.createElement('div')
++      floatingElement.style.zIndex = '50'
++      floatingElement.style.position = 'absolute'
++      floatingElement.style.visibility = 'hidden'
++      floatingElement.style.opacity = '0'
++      floatingElement.style.transition = 'opacity 0.2s ease-in-out'
+ 
+       // Add to body initially
+-      document.body.appendChild(floatingElement);
++      document.body.appendChild(floatingElement)
+ 
+       // Create the floating menu plugin
+       const floatingPlugin = FloatingMenuPlugin({
+@@ -394,17 +408,21 @@
+         element: floatingElement,
+         pluginKey: 'floatingMenu',
+         shouldShow: ({ editor, view, state, oldState, from, to }) => {
+-          const { selection } = state;
+-          const { empty } = selection;
+-          const anchor = selection.$anchor;
+-          const isRootDepth = anchor.depth === 1;
+-          const isEmptyTextBlock = anchor.parent.isTextblock && !anchor.parent.type.spec.code && !anchor.parent.textContent && anchor.parent.childCount === 0;
++          const { selection } = state
++          const { empty } = selection
++          const anchor = selection.$anchor
++          const isRootDepth = anchor.depth === 1
++          const isEmptyTextBlock =
++            anchor.parent.isTextblock &&
++            !anchor.parent.type.spec.code &&
++            !anchor.parent.textContent &&
++            anchor.parent.childCount === 0
+ 
+           if (!view.hasFocus() || !empty || !isRootDepth || !isEmptyTextBlock || !editor.isEditable) {
+-            return false;
++            return false
+           }
+ 
+-          return true;
++          return true
+         },
+         options: {
+           strategy: 'absolute',
+@@ -414,21 +432,21 @@
+           shift: true,
+           onShow: () => {
+             if (floatingElement) {
+-              floatingElement.style.visibility = 'visible';
+-              floatingElement.style.opacity = '1';
++              floatingElement.style.visibility = 'visible'
++              floatingElement.style.opacity = '1'
+             }
+           },
+           onHide: () => {
+             if (floatingElement) {
+-              floatingElement.style.visibility = 'hidden';
+-              floatingElement.style.opacity = '0';
++              floatingElement.style.visibility = 'hidden'
++              floatingElement.style.opacity = '0'
+             }
+-          }
+-        }
+-      });
++          },
++        },
++      })
+ 
+       // Register the plugin with the editor
+-      editor!.registerPlugin(floatingPlugin);
++      editor!.registerPlugin(floatingPlugin)
+ 
+       // Create the Svelte renderer
+       floatingMenuRenderer = new SvelteRenderer(FloatingMenu, {
+@@ -436,20 +454,20 @@
+         props: {
+           editor: editor!,
+           autoSetup: false, // We'll call setup manually
+-          ...floatingConfig
+-        }
+-      });
++          ...floatingConfig,
++        },
++      })
+ 
+       // Setup the floating menu
+-      floatingMenuRenderer.setup();
+-    }, 100);
++      floatingMenuRenderer.setup()
++    }, 100)
+   }
+ 
+   onDestroy(() => {
+-    editor?.destroy();
+-    floatingMenuRenderer?.destroy();
+-    floatingElement?.remove();
+-  });
++    editor?.destroy()
++    floatingMenuRenderer?.destroy()
++    floatingElement?.remove()
++  })
+ </script>
+ 
+ <EditorWrapper class={cn(className)}>
+diff --git a/dist/types.d.ts b/dist/types.d.ts
+index b6325d24ea26ebe5f5e6af1b36fe842e5dc6ff8e..452fc14a90ca73cd4d0913161877f98e76298f83 100644
+--- a/dist/types.d.ts
++++ b/dist/types.d.ts
+@@ -1,58 +1,41 @@
+-import type { Editor, FocusPosition } from '@tiptap/core';
+-import { type ClassValue } from 'clsx';
+-import type { Snippet } from 'svelte';
+-import type { HTMLButtonAttributes, HTMLAttributes } from 'svelte/elements';
++import type { Editor, EditorOptions, FocusPosition } from '@tiptap/core';
+ import type { BlockquoteOptions } from '@tiptap/extension-blockquote';
+-import type { BulletListOptions } from '@tiptap/extension-list';
++import type { BoldOptions } from '@tiptap/extension-bold';
++import type { BubbleMenuOptions } from '@tiptap/extension-bubble-menu';
++import type { CharacterCountOptions } from '@tiptap/extension-character-count';
++import type { CodeOptions } from '@tiptap/extension-code';
+ import type { CodeBlockLowlightOptions } from '@tiptap/extension-code-block-lowlight';
+-import type { DetailsOptions } from '@tiptap/extension-details';
+-import type { DetailsContentOptions } from '@tiptap/extension-details';
+-import type { DetailsSummaryOptions } from '@tiptap/extension-details';
++import type { DetailsContentOptions, DetailsOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
++import type { DragHandleOptions, DragHandlePluginProps } from '@tiptap/extension-drag-handle';
+ import type { EmojiOptions } from '@tiptap/extension-emoji';
++import type { FileHandlerOptions } from '@tiptap/extension-file-handler';
++import type { FloatingMenuOptions } from '@tiptap/extension-floating-menu';
+ import type { HardBreakOptions } from '@tiptap/extension-hard-break';
+ import type { HeadingOptions } from '@tiptap/extension-heading';
++import type { HighlightOptions } from '@tiptap/extension-highlight';
+ import type { HorizontalRuleOptions } from '@tiptap/extension-horizontal-rule';
+ import type { ImageOptions, SetImageOptions } from '@tiptap/extension-image';
+-import type { ListItemOptions } from '@tiptap/extension-list';
++import type { InvisibleCharactersOptions } from '@tiptap/extension-invisible-characters';
++import type { ItalicOptions } from '@tiptap/extension-italic';
++import type { LinkOptions } from '@tiptap/extension-link';
++import type { BulletListOptions, ListItemOptions, ListKeymapOptions, OrderedListOptions, TaskItemOptions, TaskListOptions } from '@tiptap/extension-list';
+ import type { MathematicsOptions } from '@tiptap/extension-mathematics';
+ import type { MentionOptions } from '@tiptap/extension-mention';
+-import type { OrderedListOptions } from '@tiptap/extension-list';
+ import type { ParagraphOptions } from '@tiptap/extension-paragraph';
+-import type { TableKitOptions } from '@tiptap/extension-table';
+-import type { TaskListOptions, TaskItemOptions } from '@tiptap/extension-list';
+-import type { YoutubeOptions } from '@tiptap/extension-youtube';
+-import type { BoldOptions } from '@tiptap/extension-bold';
+-import type { CodeOptions } from '@tiptap/extension-code';
+-import type { HighlightOptions } from '@tiptap/extension-highlight';
+-import type { ItalicOptions } from '@tiptap/extension-italic';
+-import type { LinkOptions } from '@tiptap/extension-link';
+ import type { StrikeOptions } from '@tiptap/extension-strike';
+ import type { SubscriptExtensionOptions } from '@tiptap/extension-subscript';
+ import type { SuperscriptExtensionOptions } from '@tiptap/extension-superscript';
+-import type { UnderlineOptions } from '@tiptap/extension-underline';
+-import type { BubbleMenuOptions } from '@tiptap/extension-bubble-menu';
+-import type { CharacterCountOptions } from '@tiptap/extension-character-count';
+-import type { DragHandlePluginProps } from '@tiptap/extension-drag-handle';
+-import type { BackgroundColorOptions } from '@tiptap/extension-text-style';
+-import type { ColorOptions } from '@tiptap/extension-text-style';
+-import type { DragHandleOptions } from '@tiptap/extension-drag-handle';
+-import type { DropcursorOptions } from '@tiptap/extensions';
+-import type { FileHandlerOptions } from '@tiptap/extension-file-handler';
+-import type { FloatingMenuOptions } from '@tiptap/extension-floating-menu';
+-import type { FocusOptions } from '@tiptap/extensions';
+-import type { FontFamilyOptions } from '@tiptap/extension-text-style';
+-import type { FontSizeOptions } from '@tiptap/extension-text-style';
+-import type { InvisibleCharactersOptions } from '@tiptap/extension-invisible-characters';
+-import type { LineHeightOptions } from '@tiptap/extension-text-style';
+-import type { ListKeymapOptions } from '@tiptap/extension-list';
+-import type { PlaceholderOptions } from '@tiptap/extensions';
+-import type { SelectionOptions } from '@tiptap/extensions';
++import type { TableKitOptions } from '@tiptap/extension-table';
+ import type { TableOfContentsOptions } from '@tiptap/extension-table-of-contents';
+-import type { TextStyleKitOptions } from '@tiptap/extension-text-style';
+ import type { TextAlignOptions } from '@tiptap/extension-text-align';
+-import type { TrailingNodeOptions } from '@tiptap/extensions';
++import type { BackgroundColorOptions, ColorOptions, FontFamilyOptions, FontSizeOptions, LineHeightOptions, TextStyleKitOptions } from '@tiptap/extension-text-style';
+ import type { TypographyOptions } from '@tiptap/extension-typography';
+-import type { UndoRedoOptions } from '@tiptap/extensions';
++import type { UnderlineOptions } from '@tiptap/extension-underline';
++import type { YoutubeOptions } from '@tiptap/extension-youtube';
++import type { DropcursorOptions, FocusOptions, PlaceholderOptions, SelectionOptions, TrailingNodeOptions, UndoRedoOptions } from '@tiptap/extensions';
++import { type ClassValue } from 'clsx';
++import type { Snippet } from 'svelte';
++import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
+ export interface BubbleMenuConfig {
+     showUnderline?: boolean;
+     showHighlight?: boolean;
+@@ -131,6 +114,7 @@ export interface EditorProviderProps {
+     content?: string;
+     editorClass?: string;
+     editor?: Editor | null;
++    config?: Partial<EditorOptions>;
+     emoji?: boolean;
+     class?: ClassValue;
+     mentions?: string[];
+@@ -409,4 +393,5 @@ export interface GroupEditorBasicProps {
+     editor: Editor | null;
+     showToolbar?: boolean;
+ }
+-export {};
++export { };
++

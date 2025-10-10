@@ -2,6 +2,10 @@
   import { invalidate } from '$app/navigation'
   import { onMount } from 'svelte'
   import { MetaTags } from 'svelte-meta-tags'
+
+  import BackgroundImage_Dark from '../assets/images/BackgroundImage-Dark.webp?enhanced'
+
+  import OutlineButton from '$lib/components/OutlineButton.svelte'
   import '../app.css'
 
   let { data, children } = $props()
@@ -65,5 +69,24 @@
     },
   ]}
 />
+<!-- TODO: Add support for Light and Dark -->
+<enhanced:img
+  alt="KnightfallBR background"
+  class="h-full w-full object-cover"
+  fetchpriority="high"
+  src={BackgroundImage_Dark}
+/>
+
+<header class="container flex justify-end">
+  <OutlineButton mode="link" href="/toolbox">Username editor</OutlineButton>
+</header>
 
 {@render children()}
+
+<style>
+  @reference "tailwindcss";
+
+  :global(picture:first-child) {
+    @apply absolute top-0 left-0 -z-50 h-screen w-screen object-cover;
+  }
+</style>

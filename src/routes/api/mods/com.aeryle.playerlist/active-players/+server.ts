@@ -1,17 +1,18 @@
-import { json, type RequestHandler, error } from '@sveltejs/kit'
+import { error, json, type RequestHandler } from '@sveltejs/kit'
 import { Redis } from '@upstash/redis'
 
 import {
-  SUPABASE_DEFAULT_KEY,
-  UUID_AERYLE_KEY,
-  UUID_T1NQUEN_KEY,
-  UUID_ANDREW_KEY,
-  UUID_ADAM_KEY,
-  UUID_THIRDONE_KEY,
-  UUID_SOUPTIS_KEY,
-  UUID_TACOSMAN_KEY,
   KV_REST_API_TOKEN,
   KV_REST_API_URL,
+  SUPABASE_DEFAULT_KEY,
+  UUID_ADAM_KEY,
+  UUID_AERYLE_KEY,
+  UUID_ANDREW_KEY,
+  UUID_CETA_KEY,
+  UUID_JAZINTH_KEY,
+  UUID_T1NQUEN_KEY,
+  UUID_TACOSMAN_KEY,
+  UUID_THIRDONE_KEY,
 } from '$env/static/private'
 
 const redis = new Redis({
@@ -33,8 +34,9 @@ const uuidToKey = {
   andrew: UUID_ANDREW_KEY,
   adam: UUID_ADAM_KEY,
   thirdone: UUID_THIRDONE_KEY,
-  souptis: UUID_SOUPTIS_KEY,
   tacosman: UUID_TACOSMAN_KEY,
+  jazinth: UUID_JAZINTH_KEY,
+  ceta: UUID_CETA_KEY,
 } as const
 
 // Store active SSE connections
