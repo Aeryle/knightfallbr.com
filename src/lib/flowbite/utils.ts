@@ -1,11 +1,11 @@
-export const rgbToHex = (color: string) => {
+export const rgbAndIntToHex = (color: string) => {
   const colors = color.startsWith('#')
     ? (color.replace('#', '').matchAll(/.{2}/g) ?? [])
     : color
         .replace('rgb(', '')
         .replace(')', '')
         .split(', ')
-        .map(color => parseInt(color))
+        .map(color => parseInt(color).toString(16))
 
   return [...colors].map(color => color.toString().padStart(2, '0'))
 }
@@ -36,7 +36,7 @@ export const validEmojis = [
 ] as const
 
 export const wrapColor = (content: string, color: string) => {
-  const [r, g, b, a = 'ff'] = rgbToHex(color)
+  const [r, g, b, a = 'ff'] = rgbAndIntToHex(color)
 
   return `<color=#${r}${g}${b}${a}>${content}</color>`
 }
