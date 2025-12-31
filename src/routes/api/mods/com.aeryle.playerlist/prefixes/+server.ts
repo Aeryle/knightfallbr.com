@@ -44,6 +44,7 @@ export const GET: RequestHandler = () => {
     {
       UUID: 'ceta',
       prefixes: ['🐐'],
+      suffixes: ['🤖'],
     },
   ]
 
