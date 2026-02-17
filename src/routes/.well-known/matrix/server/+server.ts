@@ -6,7 +6,7 @@ export const GET = () => {
     {
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-igin': '*',
+        'Access-Control-Allow-Origin': '*',
       },
     }
   )

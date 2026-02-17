@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(vercel:*)",
+      "Bash(fish -c:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
