@@ -1,12 +1,15 @@
-import { defineConfig } from "oxfmt"
+import { defineConfig } from 'oxfmt'
 
 export default defineConfig({
-  arrowParens: "avoid",
-  endOfLine: "lf",
+  arrowParens: 'avoid',
+  endOfLine: 'lf',
   jsdoc: true,
   singleQuote: true,
   sortImports: true,
   sortTailwindcss: true,
   svelte: true,
   semi: false,
+  tabWidth: 2,
+  trailingComma: 'es5',
+  useTabs: false,
 })
